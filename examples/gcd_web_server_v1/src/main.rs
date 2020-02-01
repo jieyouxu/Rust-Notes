@@ -17,7 +17,7 @@ fn main() {
 
     let mut router = Router::new();
     router.get("/", get_form, "home");
-    router.post("gcd", post_gcd, "gcd");
+    router.post("/gcd", post_gcd, "gcd");
 
     println!("Server listening on http://{}...", address);
     Iron::new(router).http(address).unwrap();
