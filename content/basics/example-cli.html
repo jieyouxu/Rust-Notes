@@ -1,0 +1,455 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Example: Handling CLI Arguments - Rust Notes</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html" class="active"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust Notes</h1>
+
+                        <div class="right-buttons">
+                            <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#example-handling-command-line-arguments" id="example-handling-command-line-arguments">Example: Handling Command Line Arguments</a></h1>
+<pre><pre class="playpen"><code class="language-rust">use std::io::Write;
+use std::str::FromStr;
+<span class="boring">
+</span><span class="boring">fn gcd(mut m: u64, mut n: u64) -&gt; u64 {
+</span><span class="boring">	assert!(m != 0 &amp;&amp; n != 0);
+</span><span class="boring">	while m != 0 {
+</span><span class="boring">		if m &lt; n {
+</span><span class="boring">			let t = m;
+</span><span class="boring">			m = n;
+</span><span class="boring">			n = t;
+</span><span class="boring">		}
+</span><span class="boring">		m %= n;
+</span><span class="boring">	}
+</span><span class="boring">	n
+</span><span class="boring">}
+</span>
+fn main() {
+	let mut numbers = Vec::new();
+
+	for arg in std::env::args().skip(1) {
+		numbers.push(
+			u64::from_str(&amp;arg)
+				.expect(&quot;failed to parse argument&quot;)
+		);
+	}
+
+	if numbers.len() == 0 {
+		writeln!(std::io::stderr(), &quot;Usage: gcd &lt;INTEGER&gt;...&quot;).unwrap();
+		std::process::exit(1);
+	}
+
+	let mut d = numbers[0];
+	for m in &amp;numbers[1..] {
+		d = gcd(d, *m);
+	}
+
+	println!(&quot;gcd of {:?} is {}&quot;, numbers, d);
+}
+</code></pre></pre>
+<p><em>Source</em>: Programming Rust</p>
+<p>Some notes for the snippet above:</p>
+<ul>
+<li>We import standard library <strong>traits</strong> <code>Write</code> and <code>FromStr</code> into the source
+file scope with the <code>use</code> import declaration.</li>
+<li>A <strong>trait</strong> is an interface specifying supported operations for a family of
+types for which each of the member type can implement.</li>
+<li>Even though the identifiers <code>Write</code> and <code>FromStr</code> are not <em>directly</em> used,
+they must be in scope so we can use their methods.</li>
+</ul>
+<h2><a class="header" href="#the-write-trait" id="the-write-trait">The <code>Write</code> Trait</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/io/trait.Write.html">std::io::Write</a></p>
+</blockquote>
+<p>Any type that implements the <code>Write</code> trait is provided with the <code>write_fmt</code>
+method that writes some formatted text to a stream (a default implementation).</p>
+<p>The <code>std::io::Stderr</code> type implements <code>Write</code>, and the <code>writeln!</code> macro can be
+used to print error messages, which <em>expands</em> to the <code>write_fmt</code> method.</p>
+<h2><a class="header" href="#the-fromstr-trait" id="the-fromstr-trait">The <code>FromStr</code> Trait</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/str/trait.FromStr.html">std::str::FromStr</a></p>
+</blockquote>
+<p>Any type that implements the <code>FromStr</code> trait is required to implement a
+<code>from_str</code> method which tries to convert a value from a string.</p>
+<p>The <code>u64</code> type implements <code>FromStr</code> and we can invoke <code>u64::from_str</code> to
+parse the command-line arguments as unsigned integers.</p>
+<h2><a class="header" href="#the-entry-point-fn-main" id="the-entry-point-fn-main">The Entry Point (<code>fn main</code>)</a></h2>
+<p>Conforming with the tradition of C, binary executables are reqired to have
+an entry point specified by the function named <code>main</code>.</p>
+<p>Since we do not return any values from <code>main</code> here, we can omit the return
+type declaration. The same holds for other functions which do not return
+any value, analogous to functions returning <code>void</code> in C:</p>
+<pre><code class="language-c">void fn_with_no_return_value() {}
+</code></pre>
+<h2><a class="header" href="#declaring-and-initializing-a-vector" id="declaring-and-initializing-a-vector">Declaring and Initializing a Vector</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html">std::vec::Vec</a></p>
+</blockquote>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut numbers = Vec::new();
+<span class="boring">}
+</span></code></pre></pre>
+<p>To hold the list of numbers from the CLI arguments, we declare a local
+mutable variable <code>numbers</code> initialized to an empty vector. The <code>Vec</code> type
+is a growable list, supporting <code>push()</code> and <code>pop()</code> operations to the end
+of the vector.</p>
+<p>Since Rust can infer that the vector only contains <code>u64</code> values, we do not
+need to provide type annotations for numbers.</p>
+<ul>
+<li>Type inference has enough information to infer that <code>numbers</code> only accept
+<code>u64</code> values because of the type of the argument passed to <code>push()</code> as well
+as passing elements of the vector to <code>gcd</code> which only accepts <code>u64</code> values.</li>
+</ul>
+<h2><a class="header" href="#control-flow-the-for-loop" id="control-flow-the-for-loop">Control Flow: the <code>for</code> Loop</a></h2>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>for arg in std::env::args().skip(1) {
+	// ...
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>The <code>for</code> loop is used to process the arguments by assigning <code>arg</code> to
+each argument sequentially, and evaluating the body of the loop.</p>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/env/fn.args.html">std::env::args</a></p>
+</blockquote>
+<p>The function <code>std::env::args()</code> returns an <strong>iterator</strong> which is an abstraction
+to allow us to traverse some container, supporting access to each element
+sequentially and indicates when all elements are exhausted.</p>
+<ul>
+<li>Rust is usually able to unroll iterators into loops (and possibly perform
+loop-unrolling and other optimizations) to reduce the iterator overhead
+of function calls and to achieve better cache locality to speed up the code.</li>
+</ul>
+<p>Iterators in Rust usually also provide helpful convenience methods that can
+be used to simplify code, e.g. <code>skip()</code>. Since the first argument to the
+CLI process is always its name, we can call <code>skip(1)</code> to skip over the
+first element by producing a new iterator to omit the first value.</p>
+<ul>
+<li>This again can be optimized away into loops.</li>
+</ul>
+<h2><a class="header" href="#vector-operations" id="vector-operations">Vector Operations</a></h2>
+<p>In the <code>for</code> loop, we wrote</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>numbers.push(u64::from_str(&amp;arg).expect(&quot;failed to parse argument&quot;));
+<span class="boring">}
+</span></code></pre></pre>
+<p>A number of things are happening here, and let's examine the statement from
+inside-out:</p>
+<ul>
+<li>
+<p>We are firstly taking an immutable reference to an argument <code>arg</code> with the
+ampersand operator <code>&amp;</code>, <code>&amp;arg</code>.</p>
+</li>
+<li>
+<p>We pass this reference to the <code>from_str</code> method implemented on the <code>u64</code>
+type.</p>
+</li>
+<li>
+<p>The <code>u64::from_str</code> method tries to parse the string into an <code>u64</code>, and
+returns a <code>Result&lt;T, E&gt;</code> type which is an enumeration (<code>enum</code>) of two
+possibilities:</p>
+<ul>
+<li>A <em>successful computation</em>, denoted by <code>Ok(T)</code>; or</li>
+<li>A <em>failed computation</em>, denoted by <code>Err(E)</code>.</li>
+</ul>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/result/">std::Result</a></p>
+</blockquote>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>enum Result&lt;T, E&gt; {
+	Ok(T),
+	Err(E),
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>In the context of <code>u64::from_str</code>, <code>Ok(u64)</code> indicates a successful parse,
+and <code>Err(e)</code> indicates a failed parse with <code>e</code> being the value explaining
+why the parse failed.</p>
+<p><em>Note: this is analogous to Haskell's <code>Either</code> typeclass which also encodes
+such binary possibilities of success or failure at the type level,
+enforcing error-handling at compile time. Enforcing error-handling at the
+type-level means if errors are not handled, they fail early at compile
+time.</em></p>
+<ul>
+<li>Functions which perform I/O and/or interact with the operating system
+(OS) all return <code>std::Result</code> types with <code>Ok</code> carrying the successful
+value or some type <code>T</code>, and the <code>Err</code> variant with an error code from
+the ssytem.</li>
+<li>To conform with the zero-cost abstraction principle, Rust does <em>not</em> have
+exceptions (at least in the Rust 2018 edition). Error handling is
+typically performed via <code>Result</code> types or via panics.</li>
+</ul>
+</li>
+<li>
+<p>We ensure that the parse is successful using the <code>expect</code> method defined
+on the <code>Result</code> type. Should the parse fail, <code>expect</code> panics with the
+error message extracted from the <code>Err(e)</code>. A successful parse simply
+evaluates to a <code>u64</code> value.</p>
+</li>
+<li>
+<p>We <code>push</code> the <code>u64</code> value to the <code>numbers</code> vector.</p>
+</li>
+<li>
+<p>If we don't receive any numbers as arguments, i.e. if the check
+<code>numbers.len() == 0</code> fails, we print an error message to the standard error
+output stream via <code>std::io:stderr()</code> and invoking the <code>writeln!</code> macro.
+The <code>unwrap</code> method checks that we successfully printed the error message
+to <code>stderr</code>. We then abort the process with an non-zero exit code <code>1</code>
+which by convention indicate abnormal exit.</p>
+</li>
+<li>
+<p>Then, we use <code>d</code> to track the GCD for the numbers we already processed.</p>
+</li>
+<li>
+<p>Note the for loop</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>for m in &amp;numbers[1..] {
+	d = gcd(d, *m);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<ul>
+<li>Here we are trying to iterate over a <code>Vec</code> which could be of arbitary
+size which could potentially be very large.</li>
+<li>Rust delegates the responsibility of memory management to the programmer,
+but helpds to check memory correctness.</li>
+<li>When we iterate, we don't need to take <strong>ownership</strong> of the vector but
+instead we only <em>borrow</em> its elements so we can read their values.
+The <code>&amp;</code> operator for <code>&amp;numbers[1..]</code> borrows a <em>reference</em> to the
+vectors elements for the second element to the last element, which
+is known a <strong>slice</strong> (<code>numbers[1..]</code>), a readonly <em>view</em> into the vector
+collection.</li>
+<li>The <code>m</code> borrows each element in <code>numbers</code> sequentially, and so <code>m</code>
+is a reference of type <code>&amp;u64</code>.</li>
+<li>We derefence <code>m</code> via the dereferencing operator <code>*m</code> so we can read its
+value.</li>
+<li>Because the ownership of the vector and its elements belong to the local
+variable <code>numbers</code>, Rust knows it can safely free the vector and its
+contents when the name <code>numbers</code> go out of scope and the end of <code>main</code>.</li>
+</ul>
+</li>
+</ul>
+<p>Note that Rust assumes successful execution if <code>main</code> finishes executing,
+and we need to explicitly invoke methods such as <code>expect</code> or
+<code>std::process:exit</code> to terminate the process with non-zero error status codes,
+unlike C/C++.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../../content/basics/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../../content/basics/example-simple-web-server.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../../content/basics/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../../content/basics/example-simple-web-server.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

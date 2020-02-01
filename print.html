@@ -1,0 +1,983 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Rust Notes</title>
+        
+        <meta name="robots" content="noindex" />
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust Notes</h1>
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#introduction" id="introduction">Introduction</a></h1>
+<p>These notes are derived from multiple sources listed below:</p>
+<h2><a class="header" href="#sources" id="sources">Sources</a></h2>
+<ul>
+<li><a href="https://doc.rust-lang.org/book/">The Rust Book</a> by the community.</li>
+<li><a href="https://doc.rust-lang.org/rust-by-example/">Rust by Example</a> by the community.</li>
+<li><a href="http://shop.oreilly.com/product/0636920040385.do">Programming Rust: Fast, Safe Systems Development</a> by Jim Blandy and Jason Orendorff.</li>
+<li><a href="https://www.amazon.co.uk/Step-Ahead-Rust-Systems-Programming-ebook/dp/B079B735B1">Step Ahead with Rust: Systems Programming in Rust</a>
+by Jonathan Creekmore and James Miller.</li>
+<li>And other various forums, github repositories, blogs and other medium.</li>
+<li>They will be referenced at bottom of each page for easy reference.</li>
+</ul>
+<h2><a class="header" href="#tooling" id="tooling">Tooling</a></h2>
+<p>The notes are written in markdown and rendered with
+<a href="https://rust-lang.github.io/mdBook/">rust-lang/mdBook</a>.</p>
+<h1><a class="header" href="#preliminaries" id="preliminaries">Preliminaries</a></h1>
+<p>Rust is a systems programming language with type safety and efficiency in mind.</p>
+<h2><a class="header" href="#infrastructure-toolchain-and-utilities" id="infrastructure-toolchain-and-utilities">Infrastructure, Toolchain and Utilities</a></h2>
+<p>The <code>rustup</code> installer helps to manage the system/user Rust version.</p>
+<ul>
+<li><a href="https://rustup.rs">Rust installer: rustup.rs</a>.</li>
+<li><a href="https://www.rust-lang.org">Rust language home: rust-lang.org</a>.</li>
+</ul>
+<p><code>rustup</code> is similar to <code>rvm</code> for ruby and <code>nvm</code> for node.js to enable easier
+upgrades to the system/user Rust version, with</p>
+<pre><code class="language-bash">$ rustup update
+</code></pre>
+<p>Upon installation, three binary executables should be available in your
+<code>$PATH</code>:</p>
+<ol>
+<li>
+<p>Build tool / package manager <code>cargo</code>:</p>
+<pre><code class="language-bash">$ cargo --version
+</code></pre>
+</li>
+<li>
+<p>Rust compiler <code>rustc</code>:</p>
+<pre><code class="language-bash">$ rustc --version
+</code></pre>
+</li>
+<li>
+<p>Rust documentation generator <code>rustdoc</code>:</p>
+<pre><code class="language-bash">$ rustdoc --version
+</code></pre>
+</li>
+</ol>
+<h3><a class="header" href="#cargo" id="cargo">Cargo</a></h3>
+<p>Cargo is the build tool and package manager for Rust.</p>
+<p>Packages are called &quot;<em>crates</em>&quot; and can be found on
+<a href="https://crates.io/">crates.io</a>, Rust's package registry, like that of NPM.</p>
+<p>Documentation available at <a href="https://doc.rust-lang.org/cargo/index.html">The Cargo Book</a>.</p>
+<h4><a class="header" href="#path-setup" id="path-setup">$PATH Setup</a></h4>
+<p>If you wish to install packages for global use via <code>cargo install</code>, you may
+need to add the following to your <code>$PATH</code>:</p>
+<pre><code class="language-bash">export $PATH=&quot;$PATH:$HOME/cargo/.bin&quot;
+</code></pre>
+<p>Which contains the binaries of downloaded packages.</p>
+<h4><a class="header" href="#generating-new-package" id="generating-new-package">Generating New Package</a></h4>
+<pre><code class="language-bash">cargo new --bin hello
+</code></pre>
+<p><code>cargo new</code> can generate either:</p>
+<ol>
+<li>a binary executable with the <code>--bin</code> flag; or</li>
+<li>a library package with the <code>--lib</code> flag.</li>
+</ol>
+<p>The package root has a <code>Cargo.toml</code> which holds the metadata build and
+dependency information for the package, similar to <code>package.json</code> for <code>npm</code>.</p>
+<h4><a class="header" href="#configuration-file-cargotoml" id="configuration-file-cargotoml">Configuration File (Cargo.toml)</a></h4>
+<p>Each <code>Cargo.toml</code> metadata file contains something like:</p>
+<pre><code class="language-toml">[package]
+name = &quot;hello&quot;
+version = &quot;0.1.0&quot;
+authors = [&quot;Name &lt;no-reply@example.com&gt;&quot;]
+
+[dependencies]
+some_package_name = &quot;0.1.0&quot;
+</code></pre>
+<p>Usually packages follow the <a href="https://semver.org/">semver 2.0.0</a> versioning
+scheme to track the level of changes in version variations.</p>
+<h4><a class="header" href="#compiling-the-package" id="compiling-the-package">Compiling the Package</a></h4>
+<pre><code class="language-bash">$ cargo build [OPTIONS]
+</code></pre>
+<p>Reference:</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/cargo/commands/cargo-build.html">cargo-build</a></li>
+</ul>
+<h4><a class="header" href="#building-and-running-the-executable-cargo-run" id="building-and-running-the-executable-cargo-run">Building and Running the Executable (cargo run)</a></h4>
+<p>With the <code>--bin</code> flag supplied, Cargo can request <code>rustc</code> to compile your code
+and run the built executable via</p>
+<pre><code class="language-bash">$ cargo run
+</code></pre>
+<p>The package will be built and placed on the <code>target/</code> directory at the root
+folder of the package.</p>
+<p>Reference:</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/cargo/commands/cargo-run.html">cargo-run</a></li>
+</ul>
+<h4><a class="header" href="#running-tests-for-the-package-cargo-test" id="running-tests-for-the-package-cargo-test">Running Tests for the Package (cargo test)</a></h4>
+<pre><code class="language-bash">$ cargo test
+</code></pre>
+<h4><a class="header" href="#cleaning-build-and-generated-files-cargo-clean" id="cleaning-build-and-generated-files-cargo-clean">Cleaning Build and Generated Files (cargo clean)</a></h4>
+<p>Useful for deleting built files and temporaries:</p>
+<pre><code class="language-bash">cargo clean
+</code></pre>
+<p>Reference:</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/cargo/commands/cargo-clean.html">cargo-clean</a></li>
+</ul>
+<h3><a class="header" href="#rust-documentation" id="rust-documentation">Rust Documentation</a></h3>
+<p>Rust has extensive documentation available online at <a href="https://doc.rust-lang.org">docs.rust-lang.org</a>.</p>
+<p>You can view a local copy if you installed Rust via <code>rustup</code>:</p>
+<pre><code class="language-bash">rustup doc --std
+</code></pre>
+<h1><a class="header" href="#basics" id="basics">Basics</a></h1>
+<h2><a class="header" href="#function" id="function">Function</a></h2>
+<p>Rust adopts a C-like syntax, with the familiar scoping-by-braces syntax.</p>
+<blockquote>
+<p><strong>Greatest common divisor</strong></p>
+<pre><pre class="playpen"><code class="language-rust">fn gcd(mut m: u64, mut n: u64) -&gt; u64 {
+	assert!(m != 0 &amp;&amp; n != 0);
+	while m != 0 {
+		if m &lt; n {
+			let t = m;
+			m = n;
+			n = t;
+		}
+		m %= n;
+	}
+	n
+}
+
+fn main() {
+	println!(&quot;gcd({}, {}) = {}&quot;, 10, 4, gcd(10, 4));
+}
+</code></pre></pre>
+<p><em>Source</em>: Programming Rust</p>
+</blockquote>
+<p>A few things to note here:</p>
+<ul>
+<li>The <code>fn</code> keyword declares a function of the name <code>gcd</code>, and the block
+delimited by braces contains the function definition for <code>gcd</code>.</li>
+<li>In Rust, functions have a type signature - such type signatures are very
+useful both in helping the compiler to typecheck as well as to help the
+reader of the code to understand what the function does.
+<ul>
+<li>
+<p>The <code>gcd</code> function has the function signature</p>
+<pre><code>gcd(mut m: u64, mut n: u64) -&gt; u64
+</code></pre>
+<p>meaning <code>gcd</code> takes two (2) parameters, two unsigned 64-bit integers
+(as denoted by <code>u64</code>) and returns an unsigned 64-bit integer.</p>
+</li>
+<li>
+<p>A name is associated with a type via the colon <code>:</code>, e.g. <code>m: u64</code>
+declares <code>m</code> to be of type <code>u64</code>.</p>
+</li>
+<li>
+<p>The <code>gcd</code> function returns an unsigned 64-bit integer, as denoted by
+the type <code>u64</code> after the arrow <code>-&gt;</code>.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a class="header" href="#rust-numbers" id="rust-numbers">Rust Numbers</a></h2>
+<h3><a class="header" href="#integers" id="integers">Integers</a></h3>
+<p>The Rust machine integer types represent their size in bits and signedness:</p>
+<ul>
+<li>Signed integers:
+<ul>
+<li><code>i8</code>: 8-bit signed integer</li>
+<li><code>i16</code>: 16-bit signed integer</li>
+<li><code>i32</code>: 32-bit signed integer</li>
+<li><code>i64</code>: 64-bit signed integer</li>
+<li><code>i128</code>: 128-bit signed integer</li>
+</ul>
+</li>
+<li>Unsigned integers:
+<ul>
+<li><code>u8</code>: 8-bit unsigned integer</li>
+<li><code>u16</code>: 16-bit unsigned integer</li>
+<li><code>u32</code>: 32-bit unsigned integer</li>
+<li><code>u64</code>: 64-bit unsigned integer</li>
+<li><code>u128</code>: 128-bit unsigned integer</li>
+</ul>
+</li>
+</ul>
+<p>Rust also has platform-dependent pointer-sized integer types:</p>
+<ul>
+<li><code>isize</code>: for pointer-sized signed integers (platform-dependent).</li>
+<li><code>usize</code>: for pointer-sized unsigned integers (platform-dependent).</li>
+</ul>
+<h3><a class="header" href="#floating-point-numbers" id="floating-point-numbers">Floating-point Numbers</a></h3>
+<p>Rust has two floating-type numbers:</p>
+<ul>
+<li><code>f32</code>: 32-bit single-precision floating-point number</li>
+<li><code>f64</code>: 64-bit double-precision floating-point number</li>
+</ul>
+<p>These both conform to the
+<a href="https://standards.ieee.org/content/ieee-standards/en/standard/754-2019.html">IEEE-754</a>
+standard for floating-point arithmetic.</p>
+<h2><a class="header" href="#variables" id="variables">Variables</a></h2>
+<p>Rust variables are <em>immutable by default</em>, like some of the popular functional
+programming languages.</p>
+<ul>
+<li>
+<p>An immutable variable declaration looks like:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let variable_name: variable_type;
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+<li>
+<p>A mutable variable declaration looks like:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut variable_name: variable_type;
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+</ul>
+<p>The <code>mut</code> keyword declares that the variable can be mutated. This also serve as
+good documentation.</p>
+<h2><a class="header" href="#macros" id="macros">Macros</a></h2>
+<p>Rust supports macros.</p>
+<p>In the <code>gcd</code> example, we made a call to the <code>assert!</code> macro which ensures that
+neither arguments to <code>gcd</code> may be zero (dividing-by-zero is a no-no!).</p>
+<p>The <code>assert!</code> macro checks if its argument is <code>true</code>, and if so terminates the
+program with a <strong>panic</strong>, outputing useful information including line number
+and source location of where the assertion failed.</p>
+<ul>
+<li>This is useful when your program absolutely <em>cannot continue to execute</em> and
+needs to instantly crash (perhaps some out-of-memory allocation error?).</li>
+<li>There are ways for error-handling which are less intrusive.</li>
+</ul>
+<p>Assertions via <code>assert!</code> in Rust are always checked regardless of compilation
+mode (i.e. doesn't matter if it is <code>--debug</code> mode or <code>--release</code> optimized
+mode).</p>
+<p>Rust also has <code>debug_assertion!</code> which are optimized away if compiled for
+<code>--release</code> mode.</p>
+<h2><a class="header" href="#let-statements" id="let-statements">Let Statements</a></h2>
+<p>The <code>let</code> statement declares a local variable.</p>
+<p>In the <code>gcd</code> function, we did not need to explicitly annotate the type of
+the temporary variable <code>t</code> with <code>u64</code> in the assignment</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let t = m;
+<span class="boring">}
+</span></code></pre></pre>
+<p>because the compiler uses <em>type inference</em> to infer that <code>t</code> is of the same
+type as variable <code>m</code> for which it is assigned to.</p>
+<ul>
+<li>
+<p>We <em>could</em> annotate the type <code>t</code> with <code>u64</code>, but in this case it doesn't
+really contribute to readibility and has no documentation value, and only
+adds noise and verbosity to the code.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let t: u64 = m;
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+</ul>
+<h2><a class="header" href="#returns-and-value-of-blocks" id="returns-and-value-of-blocks">Returns and Value of Blocks</a></h2>
+<p>Rust has the <code>return</code> statement, like that of C, but the <code>gcd</code> function does
+not need one because the expression <code>n</code> is at the <em>logical end</em> of the
+definition block of the <code>gcd</code> function.</p>
+<p>In Rust, if the body of a function ends with an <em>expression</em> (no semicolon!)
+instead of an statement (which is an expression followed by the semicolon <code>;</code>),
+that expression becomes the return value of the function.</p>
+<p>More generally, the last expression of a block <em>is</em> the value of the block
+when it is evaluated.</p>
+<pre><pre class="playpen"><code class="language-rust">fn main() {
+	let block_value = {
+		println!(&quot;inside block!&quot;);
+		2
+	};
+	println!(&quot;block_value = {}&quot;, block_value);
+}
+</code></pre></pre>
+<h2><a class="header" href="#testing-and-attributes" id="testing-and-attributes">Testing and Attributes</a></h2>
+<p>Rust has support for basic testing built into the language via the <code>#[test]</code>
+<strong>attribute</strong>.</p>
+<p>To unit test our gcd function (which is pure because we get the same output
+if the inputs remain the same and we do not perform side-effects), we can write</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn test_gcd() {
+	assert_eq!(gcd(14, 15), 1);
+	assert_eq!(gcd(1, 1), 1);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<ul>
+<li>
+<p>The function <code>test_gcd</code> exercises <code>gcd</code> and checks its actual return value
+against the expected return value.</p>
+</li>
+<li>
+<p>The <code>#[test]</code> attribute marks <code>test_gcd</code> as a <em>test function</em>, which is
+skipped in normal compilations but is compiled and invoked when we run
+the tests for the package via the command:</p>
+<pre><code class="language-bash">$ cargo test
+</code></pre>
+</li>
+</ul>
+<p><strong>Attributes</strong> such as <code>#[test]</code> are <em>compiler directives</em> for supplying
+additional information to the compiler, e.g. for controlling warnings,
+adjusting code style and conditional compilation, toggling experimental
+language features, interoping with external code via FFI, etc.</p>
+<h1><a class="header" href="#example-handling-command-line-arguments" id="example-handling-command-line-arguments">Example: Handling Command Line Arguments</a></h1>
+<pre><pre class="playpen"><code class="language-rust">use std::io::Write;
+use std::str::FromStr;
+<span class="boring">
+</span><span class="boring">fn gcd(mut m: u64, mut n: u64) -&gt; u64 {
+</span><span class="boring">	assert!(m != 0 &amp;&amp; n != 0);
+</span><span class="boring">	while m != 0 {
+</span><span class="boring">		if m &lt; n {
+</span><span class="boring">			let t = m;
+</span><span class="boring">			m = n;
+</span><span class="boring">			n = t;
+</span><span class="boring">		}
+</span><span class="boring">		m %= n;
+</span><span class="boring">	}
+</span><span class="boring">	n
+</span><span class="boring">}
+</span>
+fn main() {
+	let mut numbers = Vec::new();
+
+	for arg in std::env::args().skip(1) {
+		numbers.push(
+			u64::from_str(&amp;arg)
+				.expect(&quot;failed to parse argument&quot;)
+		);
+	}
+
+	if numbers.len() == 0 {
+		writeln!(std::io::stderr(), &quot;Usage: gcd &lt;INTEGER&gt;...&quot;).unwrap();
+		std::process::exit(1);
+	}
+
+	let mut d = numbers[0];
+	for m in &amp;numbers[1..] {
+		d = gcd(d, *m);
+	}
+
+	println!(&quot;gcd of {:?} is {}&quot;, numbers, d);
+}
+</code></pre></pre>
+<p><em>Source</em>: Programming Rust</p>
+<p>Some notes for the snippet above:</p>
+<ul>
+<li>We import standard library <strong>traits</strong> <code>Write</code> and <code>FromStr</code> into the source
+file scope with the <code>use</code> import declaration.</li>
+<li>A <strong>trait</strong> is an interface specifying supported operations for a family of
+types for which each of the member type can implement.</li>
+<li>Even though the identifiers <code>Write</code> and <code>FromStr</code> are not <em>directly</em> used,
+they must be in scope so we can use their methods.</li>
+</ul>
+<h2><a class="header" href="#the-write-trait" id="the-write-trait">The <code>Write</code> Trait</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/io/trait.Write.html">std::io::Write</a></p>
+</blockquote>
+<p>Any type that implements the <code>Write</code> trait is provided with the <code>write_fmt</code>
+method that writes some formatted text to a stream (a default implementation).</p>
+<p>The <code>std::io::Stderr</code> type implements <code>Write</code>, and the <code>writeln!</code> macro can be
+used to print error messages, which <em>expands</em> to the <code>write_fmt</code> method.</p>
+<h2><a class="header" href="#the-fromstr-trait" id="the-fromstr-trait">The <code>FromStr</code> Trait</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/str/trait.FromStr.html">std::str::FromStr</a></p>
+</blockquote>
+<p>Any type that implements the <code>FromStr</code> trait is required to implement a
+<code>from_str</code> method which tries to convert a value from a string.</p>
+<p>The <code>u64</code> type implements <code>FromStr</code> and we can invoke <code>u64::from_str</code> to
+parse the command-line arguments as unsigned integers.</p>
+<h2><a class="header" href="#the-entry-point-fn-main" id="the-entry-point-fn-main">The Entry Point (<code>fn main</code>)</a></h2>
+<p>Conforming with the tradition of C, binary executables are reqired to have
+an entry point specified by the function named <code>main</code>.</p>
+<p>Since we do not return any values from <code>main</code> here, we can omit the return
+type declaration. The same holds for other functions which do not return
+any value, analogous to functions returning <code>void</code> in C:</p>
+<pre><code class="language-c">void fn_with_no_return_value() {}
+</code></pre>
+<h2><a class="header" href="#declaring-and-initializing-a-vector" id="declaring-and-initializing-a-vector">Declaring and Initializing a Vector</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html">std::vec::Vec</a></p>
+</blockquote>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut numbers = Vec::new();
+<span class="boring">}
+</span></code></pre></pre>
+<p>To hold the list of numbers from the CLI arguments, we declare a local
+mutable variable <code>numbers</code> initialized to an empty vector. The <code>Vec</code> type
+is a growable list, supporting <code>push()</code> and <code>pop()</code> operations to the end
+of the vector.</p>
+<p>Since Rust can infer that the vector only contains <code>u64</code> values, we do not
+need to provide type annotations for numbers.</p>
+<ul>
+<li>Type inference has enough information to infer that <code>numbers</code> only accept
+<code>u64</code> values because of the type of the argument passed to <code>push()</code> as well
+as passing elements of the vector to <code>gcd</code> which only accepts <code>u64</code> values.</li>
+</ul>
+<h2><a class="header" href="#control-flow-the-for-loop" id="control-flow-the-for-loop">Control Flow: the <code>for</code> Loop</a></h2>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>for arg in std::env::args().skip(1) {
+	// ...
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>The <code>for</code> loop is used to process the arguments by assigning <code>arg</code> to
+each argument sequentially, and evaluating the body of the loop.</p>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/env/fn.args.html">std::env::args</a></p>
+</blockquote>
+<p>The function <code>std::env::args()</code> returns an <strong>iterator</strong> which is an abstraction
+to allow us to traverse some container, supporting access to each element
+sequentially and indicates when all elements are exhausted.</p>
+<ul>
+<li>Rust is usually able to unroll iterators into loops (and possibly perform
+loop-unrolling and other optimizations) to reduce the iterator overhead
+of function calls and to achieve better cache locality to speed up the code.</li>
+</ul>
+<p>Iterators in Rust usually also provide helpful convenience methods that can
+be used to simplify code, e.g. <code>skip()</code>. Since the first argument to the
+CLI process is always its name, we can call <code>skip(1)</code> to skip over the
+first element by producing a new iterator to omit the first value.</p>
+<ul>
+<li>This again can be optimized away into loops.</li>
+</ul>
+<h2><a class="header" href="#vector-operations" id="vector-operations">Vector Operations</a></h2>
+<p>In the <code>for</code> loop, we wrote</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>numbers.push(u64::from_str(&amp;arg).expect(&quot;failed to parse argument&quot;));
+<span class="boring">}
+</span></code></pre></pre>
+<p>A number of things are happening here, and let's examine the statement from
+inside-out:</p>
+<ul>
+<li>
+<p>We are firstly taking an immutable reference to an argument <code>arg</code> with the
+ampersand operator <code>&amp;</code>, <code>&amp;arg</code>.</p>
+</li>
+<li>
+<p>We pass this reference to the <code>from_str</code> method implemented on the <code>u64</code>
+type.</p>
+</li>
+<li>
+<p>The <code>u64::from_str</code> method tries to parse the string into an <code>u64</code>, and
+returns a <code>Result&lt;T, E&gt;</code> type which is an enumeration (<code>enum</code>) of two
+possibilities:</p>
+<ul>
+<li>A <em>successful computation</em>, denoted by <code>Ok(T)</code>; or</li>
+<li>A <em>failed computation</em>, denoted by <code>Err(E)</code>.</li>
+</ul>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/result/">std::Result</a></p>
+</blockquote>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>enum Result&lt;T, E&gt; {
+	Ok(T),
+	Err(E),
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>In the context of <code>u64::from_str</code>, <code>Ok(u64)</code> indicates a successful parse,
+and <code>Err(e)</code> indicates a failed parse with <code>e</code> being the value explaining
+why the parse failed.</p>
+<p><em>Note: this is analogous to Haskell's <code>Either</code> typeclass which also encodes
+such binary possibilities of success or failure at the type level,
+enforcing error-handling at compile time. Enforcing error-handling at the
+type-level means if errors are not handled, they fail early at compile
+time.</em></p>
+<ul>
+<li>Functions which perform I/O and/or interact with the operating system
+(OS) all return <code>std::Result</code> types with <code>Ok</code> carrying the successful
+value or some type <code>T</code>, and the <code>Err</code> variant with an error code from
+the ssytem.</li>
+<li>To conform with the zero-cost abstraction principle, Rust does <em>not</em> have
+exceptions (at least in the Rust 2018 edition). Error handling is
+typically performed via <code>Result</code> types or via panics.</li>
+</ul>
+</li>
+<li>
+<p>We ensure that the parse is successful using the <code>expect</code> method defined
+on the <code>Result</code> type. Should the parse fail, <code>expect</code> panics with the
+error message extracted from the <code>Err(e)</code>. A successful parse simply
+evaluates to a <code>u64</code> value.</p>
+</li>
+<li>
+<p>We <code>push</code> the <code>u64</code> value to the <code>numbers</code> vector.</p>
+</li>
+<li>
+<p>If we don't receive any numbers as arguments, i.e. if the check
+<code>numbers.len() == 0</code> fails, we print an error message to the standard error
+output stream via <code>std::io:stderr()</code> and invoking the <code>writeln!</code> macro.
+The <code>unwrap</code> method checks that we successfully printed the error message
+to <code>stderr</code>. We then abort the process with an non-zero exit code <code>1</code>
+which by convention indicate abnormal exit.</p>
+</li>
+<li>
+<p>Then, we use <code>d</code> to track the GCD for the numbers we already processed.</p>
+</li>
+<li>
+<p>Note the for loop</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>for m in &amp;numbers[1..] {
+	d = gcd(d, *m);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<ul>
+<li>Here we are trying to iterate over a <code>Vec</code> which could be of arbitary
+size which could potentially be very large.</li>
+<li>Rust delegates the responsibility of memory management to the programmer,
+but helpds to check memory correctness.</li>
+<li>When we iterate, we don't need to take <strong>ownership</strong> of the vector but
+instead we only <em>borrow</em> its elements so we can read their values.
+The <code>&amp;</code> operator for <code>&amp;numbers[1..]</code> borrows a <em>reference</em> to the
+vectors elements for the second element to the last element, which
+is known a <strong>slice</strong> (<code>numbers[1..]</code>), a readonly <em>view</em> into the vector
+collection.</li>
+<li>The <code>m</code> borrows each element in <code>numbers</code> sequentially, and so <code>m</code>
+is a reference of type <code>&amp;u64</code>.</li>
+<li>We derefence <code>m</code> via the dereferencing operator <code>*m</code> so we can read its
+value.</li>
+<li>Because the ownership of the vector and its elements belong to the local
+variable <code>numbers</code>, Rust knows it can safely free the vector and its
+contents when the name <code>numbers</code> go out of scope and the end of <code>main</code>.</li>
+</ul>
+</li>
+</ul>
+<p>Note that Rust assumes successful execution if <code>main</code> finishes executing,
+and we need to explicitly invoke methods such as <code>expect</code> or
+<code>std::process:exit</code> to terminate the process with non-zero error status codes,
+unlike C/C++.</p>
+<h1><a class="header" href="#example-simple-web-server" id="example-simple-web-server">Example: Simple Web Server</a></h1>
+<p>We can create a simple web server to serve a static HTML page as the front
+end to our <code>gcd</code> function.</p>
+<h2><a class="header" href="#initialize-a-executable-package" id="initialize-a-executable-package">Initialize a Executable Package</a></h2>
+<pre><code class="language-bash">$ cargo new --bin gcd_web_server_v1
+$ cd gcd_web_server_v1
+</code></pre>
+<h2><a class="header" href="#editing-cargotoml" id="editing-cargotoml">Editing Cargo.toml</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/cargo/reference/manifest.html">Cargo.toml Manifest</a></p>
+</blockquote>
+<pre><code class="language-toml">[package]
+name = &quot;gcd_web_server_v1&quot;
+version = &quot;0.1.0&quot;
+authors = [&quot;许杰友 Jieyou Xu (Joe) &lt;jieyouxu@outlook.com&gt;&quot;]
+edition = &quot;2018&quot;
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+iron = &quot;0.6.1&quot;
+router = &quot;0.6.0&quot;
+urlencoded = &quot;0.6.0&quot;
+</code></pre>
+<p>Note that the <code>[dependencies]</code> section in the <code>Cargo.toml</code> file specifies the
+names and versions of crates published on <a href="https://crates.io">crates.io</a>.</p>
+<h2><a class="header" href="#version-1" id="version-1">Version 1</a></h2>
+<pre><pre class="playpen"><code class="language-rust">use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::str::FromStr;
+
+use iron::mime::Mime;
+use iron::prelude::*;
+use iron::status;
+use router::Router;
+use urlencoded::UrlEncodedBody;
+
+fn main() {
+    const PORT: u16 = 8080;
+    // Unfortunately `SocketAddr::new` and `Ipv4Addr::new` are not yet
+    // `const fn`s so we can't make them compile-time constants, because
+    // `match` is not yet compile time `const`.
+    // See PR #67315: https://github.com/rust-lang/rust/pull/67315
+    let address: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), PORT);
+
+    let mut router = Router::new();
+    router.get(&quot;/&quot;, get_form, &quot;home&quot;);
+    router.post(&quot;gcd&quot;, post_gcd, &quot;gcd&quot;);
+
+    println!(&quot;Server listening on http://{}...&quot;, address);
+    Iron::new(router).http(address).unwrap();
+}
+
+fn get_form(_request: &amp;mut Request) -&gt; IronResult&lt;Response&gt; {
+    let content = r#&quot;
+		&lt;title&gt;GCD&lt;/title&gt;
+		&lt;form action=&quot;/gcd&quot; method=&quot;post&quot;&gt;
+			&lt;input type=&quot;text&quot; name=&quot;n&quot; /&gt;
+			&lt;input type=&quot;text&quot; name=&quot;n&quot; /&gt;
+			&lt;button type=&quot;submit&quot;&gt;Compute&lt;/button&gt;
+		&lt;/form&gt;
+	&quot;#;
+
+    let mut response = Response::new();
+
+    response.set_mut(status::Ok);
+    response.set_mut(&quot;text/html; charset=utf-8&quot;.parse::&lt;Mime&gt;().unwrap());
+    response.set_mut(content);
+
+    Ok(response)
+}
+
+fn post_gcd(request: &amp;mut Request) -&gt; IronResult&lt;Response&gt; {
+    let mut response = Response::new();
+
+    let form_data = match request.get_ref::&lt;UrlEncodedBody&gt;() {
+        Err(e) =&gt; {
+            response.set_mut(status::BadRequest);
+            response.set_mut(format!(&quot;failed to parse {:?}\n&quot;, e));
+            return Ok(response);
+        }
+        Ok(map) =&gt; map,
+    };
+
+    let raw_numbers = match form_data.get(&quot;n&quot;) {
+        None =&gt; {
+            response.set_mut(status::BadRequest);
+            response.set_mut(&quot;invalid form&quot;);
+            return Ok(response);
+        }
+        Some(nums) =&gt; nums,
+    };
+
+    let mut numbers = Vec::new();
+
+    for raw in raw_numbers {
+        match u64::from_str(&amp;raw) {
+            Err(_) =&gt; {
+                response.set_mut(status::BadRequest);
+                response.set_mut(format!(&quot;NaN: {:?} is not a number\n&quot;, raw));
+                return Ok(response);
+            }
+            Ok(n) =&gt; {
+                numbers.push(n);
+            }
+        }
+    }
+
+    let mut d = numbers[0];
+
+    for m in &amp;numbers[1..] {
+        d = gcd(d, *m);
+    }
+
+    response.set_mut(status::Ok);
+    response.set_mut(&quot;text/html; charset=utf-8&quot;.parse::&lt;Mime&gt;().unwrap());
+    response.set_mut(format!(&quot;GCD of {:?} is &lt;b&gt;{}&lt;/b&gt;\n&quot;, numbers, d));
+
+    Ok(response)
+}
+
+</code></pre></pre>
+<blockquote>
+<p>Reference: <a href="http://ironframework.io/">iron 0.6.1</a></p>
+</blockquote>
+<ul>
+<li>
+<p>We first import the required crates, from the standard library as well as
+the <code>iron</code> framework.</p>
+</li>
+<li>
+<p>We construct an HTTP server via <code>Iron::new()</code> and serve it on the specified
+<code>SocketAddr</code>.</p>
+</li>
+<li>
+<p>We register the handler <code>get_form</code> for the route <code>/</code>; a route handler takes
+a <code>Request</code> and constructs a suitable <code>Response</code>.</p>
+</li>
+<li>
+<p>For the page content, we use a <em>raw string literal</em> denoted via
+<code>r#&quot;&lt;CONTENT&gt;&quot;#</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>r#&quot;
+	double quotes here &quot;&quot; need not be escaped
+&quot;#
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+<li>
+<p>We use <code>match</code> expressions to handle possible error cases and return
+suitable HTTP error status codes and messages early.</p>
+<p>A match expression matching against a <code>Result</code> enum takes the form of</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>match expression {
+  Ok(value) =&gt; {}
+  Err(e) =&gt; {}
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>The Rust compiler will force the programmer to <em>exhaustively</em> match against
+the <code>expression</code> to help your catch mistakes.</p>
+</li>
+<li>
+<p>Note the <code>request.get_ref::&lt;UrlEncodedBody&gt;()</code> expression, which tries to
+parse the <code>request</code>'s body as url-encoded format for forms.</p>
+<p>Here, <code>::&lt;UrlEncodedBody&gt;</code> is the <code>type parameter</code> for <code>get_ref</code> which
+specifies that <code>get_ref</code> should retreive the body as <code>UrlEncodedBody</code> type.</p>
+</li>
+</ul>
+<h1><a class="header" href="#concurrency" id="concurrency">Concurrency</a></h1>
+<p>Rust's type system and the <strong>borrow checker</strong> (<code>borrowck</code>) prevents code which
+contains memory errors from compiling (unless you use <code>unsafe</code>).</p>
+<blockquote>
+<p>Reference: <a href="https://www.slideshare.net/nikomatsakis/rust-concurrency-tutorial-2015-1202">nikomatsakis</a></p>
+</blockquote>
+<blockquote>
+<p>Great talk by Niko Matsakis: <a href="https://www.youtube.com/watch?v=lO1z-7cuRYI">C++Now 2017: Niko Matsakis &quot;Rust: Hack Without Fear!&quot;</a></p>
+</blockquote>
+<blockquote>
+<p>Blog post: <a href="https://blog.rust-lang.org/2015/04/10/Fearless-Concurrency.html">Fearless Concurrency</a></p>
+</blockquote>
+<ul>
+<li>This is the <strong>ownership/borrowing</strong> system + traits:
+<ul>
+<li>Does not need runtime (compared to C++).</li>
+<li>Guaranteed memory safety (no need for garbage collection).</li>
+<li>No data races.</li>
+</ul>
+</li>
+</ul>
+<h2><a class="header" href="#principled-aliasing-and-mutations" id="principled-aliasing-and-mutations">Principled Aliasing and Mutations</a></h2>
+<p>With the ownership and borrowing system in Rust, by utilizing suitable scoping
+rules (<strong>lifetime</strong>s) and the type system, we can have principled aliasing and
+mutations for avoiding problems such as data races and liveness issues.</p>
+<p>The key is to have <em>mutually exclusive</em> <strong>aliasing</strong> versus <strong>mutations</strong> which
+are enforced by Rust's type system.</p>
+<table><thead><tr><th>Type</th><th>Ownership</th><th>Alias Allowed</th><th>Mutation Allowed</th></tr></thead><tbody>
+<tr><td><code>T</code></td><td>Owned</td><td>❌</td><td>✅</td></tr>
+<tr><td><code>&amp;T</code></td><td>Shared reference</td><td>✅</td><td>❌</td></tr>
+<tr><td><code>&amp;mut T</code></td><td>Mutable reference</td><td>❌</td><td>✅</td></tr>
+</tbody></table>
+<h2><a class="header" href="#concurrency-paradigms" id="concurrency-paradigms">Concurrency Paradigms</a></h2>
+<p>Rust does not have &quot;default&quot; concurrency paradigm, instead it supports all of
+them:</p>
+<table><thead><tr><th>Concurrency Paradigm</th><th>Addressed by Ownership</th><th>Addressed by Borrowing</th><th>Notable Usages</th></tr></thead><tbody>
+<tr><td>Fork-join</td><td></td><td>✅</td><td>C</td></tr>
+<tr><td>Message passing</td><td></td><td>✅</td><td>Erlang/Elixir</td></tr>
+<tr><td>Locking</td><td>✅</td><td>✅</td><td>C, Java</td></tr>
+<tr><td>Lock-free</td><td>✅</td><td>✅</td><td>C, Java</td></tr>
+<tr><td>Futures (Async/Await)</td><td>✅</td><td>✅</td><td>JavaScript (node.js)</td></tr>
+</tbody></table>
+<blockquote>
+<p>Great talk by Jon Gjengset on <a href="https://www.youtube.com/watch?v=s19G6n0UjsM&amp;t=1118s">Noria: Lock-free concurrent database</a></p>
+<p>Lock-free, eventually consistent, concurrent multi-value map: <a href="https://github.com/jonhoo/rust-evmap">jonhoo/rust-evmap</a></p>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+        
+        
+
+    </body>
+</html>

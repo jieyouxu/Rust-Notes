@@ -1,0 +1,391 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Example: Simple Web Server - Rust Notes</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html" class="active"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust Notes</h1>
+
+                        <div class="right-buttons">
+                            <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#example-simple-web-server" id="example-simple-web-server">Example: Simple Web Server</a></h1>
+<p>We can create a simple web server to serve a static HTML page as the front
+end to our <code>gcd</code> function.</p>
+<h2><a class="header" href="#initialize-a-executable-package" id="initialize-a-executable-package">Initialize a Executable Package</a></h2>
+<pre><code class="language-bash">$ cargo new --bin gcd_web_server_v1
+$ cd gcd_web_server_v1
+</code></pre>
+<h2><a class="header" href="#editing-cargotoml" id="editing-cargotoml">Editing Cargo.toml</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/cargo/reference/manifest.html">Cargo.toml Manifest</a></p>
+</blockquote>
+<pre><code class="language-toml">[package]
+name = &quot;gcd_web_server_v1&quot;
+version = &quot;0.1.0&quot;
+authors = [&quot;许杰友 Jieyou Xu (Joe) &lt;jieyouxu@outlook.com&gt;&quot;]
+edition = &quot;2018&quot;
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+iron = &quot;0.6.1&quot;
+router = &quot;0.6.0&quot;
+urlencoded = &quot;0.6.0&quot;
+</code></pre>
+<p>Note that the <code>[dependencies]</code> section in the <code>Cargo.toml</code> file specifies the
+names and versions of crates published on <a href="https://crates.io">crates.io</a>.</p>
+<h2><a class="header" href="#version-1" id="version-1">Version 1</a></h2>
+<pre><pre class="playpen"><code class="language-rust">use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::str::FromStr;
+
+use iron::mime::Mime;
+use iron::prelude::*;
+use iron::status;
+use router::Router;
+use urlencoded::UrlEncodedBody;
+
+fn main() {
+    const PORT: u16 = 8080;
+    // Unfortunately `SocketAddr::new` and `Ipv4Addr::new` are not yet
+    // `const fn`s so we can't make them compile-time constants, because
+    // `match` is not yet compile time `const`.
+    // See PR #67315: https://github.com/rust-lang/rust/pull/67315
+    let address: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), PORT);
+
+    let mut router = Router::new();
+    router.get(&quot;/&quot;, get_form, &quot;home&quot;);
+    router.post(&quot;gcd&quot;, post_gcd, &quot;gcd&quot;);
+
+    println!(&quot;Server listening on http://{}...&quot;, address);
+    Iron::new(router).http(address).unwrap();
+}
+
+fn get_form(_request: &amp;mut Request) -&gt; IronResult&lt;Response&gt; {
+    let content = r#&quot;
+		&lt;title&gt;GCD&lt;/title&gt;
+		&lt;form action=&quot;/gcd&quot; method=&quot;post&quot;&gt;
+			&lt;input type=&quot;text&quot; name=&quot;n&quot; /&gt;
+			&lt;input type=&quot;text&quot; name=&quot;n&quot; /&gt;
+			&lt;button type=&quot;submit&quot;&gt;Compute&lt;/button&gt;
+		&lt;/form&gt;
+	&quot;#;
+
+    let mut response = Response::new();
+
+    response.set_mut(status::Ok);
+    response.set_mut(&quot;text/html; charset=utf-8&quot;.parse::&lt;Mime&gt;().unwrap());
+    response.set_mut(content);
+
+    Ok(response)
+}
+
+fn post_gcd(request: &amp;mut Request) -&gt; IronResult&lt;Response&gt; {
+    let mut response = Response::new();
+
+    let form_data = match request.get_ref::&lt;UrlEncodedBody&gt;() {
+        Err(e) =&gt; {
+            response.set_mut(status::BadRequest);
+            response.set_mut(format!(&quot;failed to parse {:?}\n&quot;, e));
+            return Ok(response);
+        }
+        Ok(map) =&gt; map,
+    };
+
+    let raw_numbers = match form_data.get(&quot;n&quot;) {
+        None =&gt; {
+            response.set_mut(status::BadRequest);
+            response.set_mut(&quot;invalid form&quot;);
+            return Ok(response);
+        }
+        Some(nums) =&gt; nums,
+    };
+
+    let mut numbers = Vec::new();
+
+    for raw in raw_numbers {
+        match u64::from_str(&amp;raw) {
+            Err(_) =&gt; {
+                response.set_mut(status::BadRequest);
+                response.set_mut(format!(&quot;NaN: {:?} is not a number\n&quot;, raw));
+                return Ok(response);
+            }
+            Ok(n) =&gt; {
+                numbers.push(n);
+            }
+        }
+    }
+
+    let mut d = numbers[0];
+
+    for m in &amp;numbers[1..] {
+        d = gcd(d, *m);
+    }
+
+    response.set_mut(status::Ok);
+    response.set_mut(&quot;text/html; charset=utf-8&quot;.parse::&lt;Mime&gt;().unwrap());
+    response.set_mut(format!(&quot;GCD of {:?} is &lt;b&gt;{}&lt;/b&gt;\n&quot;, numbers, d));
+
+    Ok(response)
+}
+
+</code></pre></pre>
+<blockquote>
+<p>Reference: <a href="http://ironframework.io/">iron 0.6.1</a></p>
+</blockquote>
+<ul>
+<li>
+<p>We first import the required crates, from the standard library as well as
+the <code>iron</code> framework.</p>
+</li>
+<li>
+<p>We construct an HTTP server via <code>Iron::new()</code> and serve it on the specified
+<code>SocketAddr</code>.</p>
+</li>
+<li>
+<p>We register the handler <code>get_form</code> for the route <code>/</code>; a route handler takes
+a <code>Request</code> and constructs a suitable <code>Response</code>.</p>
+</li>
+<li>
+<p>For the page content, we use a <em>raw string literal</em> denoted via
+<code>r#&quot;&lt;CONTENT&gt;&quot;#</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>r#&quot;
+	double quotes here &quot;&quot; need not be escaped
+&quot;#
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+<li>
+<p>We use <code>match</code> expressions to handle possible error cases and return
+suitable HTTP error status codes and messages early.</p>
+<p>A match expression matching against a <code>Result</code> enum takes the form of</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>match expression {
+  Ok(value) =&gt; {}
+  Err(e) =&gt; {}
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>The Rust compiler will force the programmer to <em>exhaustively</em> match against
+the <code>expression</code> to help your catch mistakes.</p>
+</li>
+<li>
+<p>Note the <code>request.get_ref::&lt;UrlEncodedBody&gt;()</code> expression, which tries to
+parse the <code>request</code>'s body as url-encoded format for forms.</p>
+<p>Here, <code>::&lt;UrlEncodedBody&gt;</code> is the <code>type parameter</code> for <code>get_ref</code> which
+specifies that <code>get_ref</code> should retreive the body as <code>UrlEncodedBody</code> type.</p>
+</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../../content/basics/example-cli.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../../content/basics/concurrency.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../../content/basics/example-cli.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../../content/basics/concurrency.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
