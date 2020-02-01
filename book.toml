@@ -4,3 +4,6 @@ language = "en"
 multilingual = false
 src = "src"
 title = "Rust Notes"
+
+[output.html]
+theme = "src/theme"

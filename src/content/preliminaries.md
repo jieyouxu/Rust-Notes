@@ -114,6 +114,12 @@ Reference:
 
 - [cargo-run](https://doc.rust-lang.org/cargo/commands/cargo-run.html)
 
+#### Running Tests for the Package (cargo test)
+
+```bash
+$ cargo test
+```
+
 #### Cleaning Build and Generated Files (cargo clean)
 
 Useful for deleting built files and temporaries:
@@ -125,3 +131,13 @@ cargo clean
 Reference:
 
 - [cargo-clean](https://doc.rust-lang.org/cargo/commands/cargo-clean.html)
+
+### Rust Documentation
+
+Rust has extensive documentation available online at [docs.rust-lang.org](https://doc.rust-lang.org).
+
+You can view a local copy if you installed Rust via `rustup`:
+
+```bash
+rustup doc --std
+```
