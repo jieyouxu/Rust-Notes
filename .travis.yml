@@ -1,6 +1,6 @@
 language: rust
 
-os: ubuntu
+os: linux
 dist: xenial
 
 cache:
