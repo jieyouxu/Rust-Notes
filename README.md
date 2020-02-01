@@ -1,5 +1,7 @@
 # Rust Notes
 
+[![Build Status](https://travis-ci.com/jieyouxu/Rust-Notes.svg?branch=master)](https://travis-ci.com/jieyouxu/Rust-Notes)
+
 ## Tooling
 
 The book is generated via [rust-lang/mdBook](https://github.com/rust-lang/mdBook).
