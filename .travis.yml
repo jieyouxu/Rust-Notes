@@ -20,13 +20,13 @@ before_script:
   - cargo install-update -a
 
 script:
-  - mdbook build /tmp/rust-notes
+  - mdbook build $TRAVIS_BUILD_DIR
 
 deploy:
   provider: pages
   cleanup: false
   token: $GITHUB_TOKEN
-  local_dir: /tmp/rust-notes/book
+  local_dir: $TRAVIS_BUILD_DIR/book
   keep_history: false
   on:
     branch: master
