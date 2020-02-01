@@ -1,4 +1,4 @@
-name: Rust Notes Deployment
+name: notes-gh-pages
 
 on:
   push:

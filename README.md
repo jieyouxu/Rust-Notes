@@ -1,6 +1,6 @@
 # Rust Notes
 
-[![Build Status](https://travis-ci.com/jieyouxu/Rust-Notes.svg?branch=master)](https://travis-ci.com/jieyouxu/Rust-Notes)
+![](https://github.com/jieyouxu/Rust-Notes/workflows/notes-gh-pages/badge.svg)
 
 ## Tooling
 
