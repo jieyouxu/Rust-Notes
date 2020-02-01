@@ -1,4 +1,5 @@
 language: rust
+sudo: false
 
 os: linux
 dist: xenial
@@ -19,13 +20,13 @@ before_script:
   - cargo install-update -a
 
 script:
-  - mdbook build
+  - mdbook build /tmp/rust-notes
 
 deploy:
   provider: pages
   cleanup: false
   token: $GITHUB_TOKEN
-  local_dir: ./book
+  local_dir: /tmp/rust-notes/book
   keep_history: false
   on:
     branch: master
