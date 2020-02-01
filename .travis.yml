@@ -20,13 +20,13 @@ before_script:
   - cargo install-update -a
 
 script:
-  - mdbook build $TRAVIS_BUILD_DIR
+  - mdbook build
 
 deploy:
   provider: pages
   cleanup: false
   token: $GITHUB_TOKEN
-  local_dir: $TRAVIS_BUILD_DIR/book
+  local_dir: book
   keep_history: false
   on:
     branch: master
