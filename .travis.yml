@@ -1,7 +1,7 @@
 language: rust
 
-root:
-  os: linux
+os: ubuntu
+dist: xenial
 
 cache:
   - cargo
