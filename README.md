@@ -2,6 +2,8 @@
 
 ![](https://github.com/jieyouxu/Rust-Notes/workflows/notes-gh-pages/badge.svg)
 
+Notes available at: https://jieyouxu.github.io/Rust-Notes/.
+
 ## Tooling
 
 The book is generated via [rust-lang/mdBook](https://github.com/rust-lang/mdBook).
