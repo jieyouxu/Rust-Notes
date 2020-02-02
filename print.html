@@ -33,6 +33,9 @@
         
 
         
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -83,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -920,6 +923,446 @@ them:</p>
 <p>Great talk by Jon Gjengset on <a href="https://www.youtube.com/watch?v=s19G6n0UjsM&amp;t=1118s">Noria: Lock-free concurrent database</a></p>
 <p>Lock-free, eventually consistent, concurrent multi-value map: <a href="https://github.com/jonhoo/rust-evmap">jonhoo/rust-evmap</a></p>
 </blockquote>
+<h1><a class="header" href="#example-mandelbrot-set" id="example-mandelbrot-set">Example: Mandelbrot Set</a></h1>
+<blockquote>
+<p>Reference: <a href="https://en.wikipedia.org/wiki/Mandelbrot_set">Mandelbrot Set</a></p>
+</blockquote>
+<blockquote>
+<p>&quot;The Mandelbrot set is the set of complex numbers \(c\) for which the
+function \( f_c(z) = z^2 + c \) does not diverge when iterated from \(z
+= 0\), i.e., for which the sequence \( f_c(0), f_c(f_c(0)) \), etc.,
+remains bounded in absolute value.</p>
+<p>The Mandelbrot set is the set of values of \(c\) in the complex plane for
+which the orbit of \(0\) under iteration of the quadratic map</p>
+<p>\[
+z_{n+1} = z^2_n + c
+\]</p>
+<p>remains bounded.&quot;&quot;</p>
+<p><em>Source</em>: Wikipedia <a href="https://en.wikipedia.org/wiki/Mandelbrot_set">Mandelbrot Set</a></p>
+</blockquote>
+<p>We can exploit the property of the Mandelbrot set that a point \(c\) belongs
+to the Mandelbrot set if and only if it satisfies the condition</p>
+<p>\[
+\forall n \ge 0 \colon \lvert P_c^n(0) \le 2 \rvert
+\]</p>
+<p>Should the absolute value of \( P_c^n(0) \) become \( &gt; 2 \), the
+sequence escapes into infinity.</p>
+<p>Since multiplication on hardware tends to be faster than division, we can
+exploit the fact that for any complex number \( z = x + iy \) for some
+real numbers \( x, y \in \mathbb{R} \), its absolute value is
+\( \lvert x^2 + y^2 \rvert \). Then the property becomes</p>
+<p>\[
+\begin{align}
+\lvert x^2 + y^2 \rvert &amp;\le 2 \\
+\Leftrightarrow x^2 + y^2 &amp;\le 4
+\end{align}
+\]</p>
+<p>since \(x^2, y^2 \ge 0\) and so
+\( \lvert x^2 + y^2 \rvert \equiv x^2 + y^2 \).</p>
+<p>Additionally, a <code>loop</code> can be used to avoid potential stack overflows from
+recursive function calls overflowing the call stack (subject to tail call
+optimizations).</p>
+<h2><a class="header" href="#code" id="code">Code</a></h2>
+<pre><pre class="playpen"><code class="language-rust">use std::fs::File;
+use std::io::Write;
+use std::str::FromStr;
+
+use num::Complex;
+
+use num_cpus;
+
+use image::png::PNGEncoder;
+use image::ColorType;
+
+use crossbeam;
+
+fn main() {
+    let arguments: Vec&lt;String&gt; = std::env::args().collect();
+
+    if arguments.len() != 5 {
+        writeln!(
+            std::io::stderr(),
+            &quot;Usage: mandelbrot &lt;FILENAME&gt; &lt;DIMENSIONS&gt; &lt;UPPER_LEFT&gt; &lt;LOWER_RIGHT&gt;&quot;
+        )
+        .unwrap();
+        writeln!(
+            std::io::stderr(),
+            &quot;Example: {} mandelbrot.png 1000x750 -1.20,0.35 -1,0.20&quot;,
+            arguments[0]
+        )
+        .unwrap();
+        std::process::exit(1);
+    }
+
+    let bounds = parse_pair(&amp;arguments[2], 'x').expect(&quot;failed to parse &lt;DIMENSIONS&gt;&quot;);
+
+    println!(&quot;[INFO] bounds = {:?}&quot;, &amp;bounds);
+
+    let upper_left = parse_complex(&amp;arguments[3]).expect(&quot;failed to parse &lt;UPPER_LEFT&gt;&quot;);
+    let lower_right = parse_complex(&amp;arguments[4]).expect(&quot;failed to parse &lt;LOWER_RIGHT&gt;&quot;);
+
+    println!(&quot;[INFO] upper_left = {:?}&quot;, upper_left);
+    println!(&quot;[INFO] lower_right = {:?}&quot;, lower_right);
+
+    let mut pixels_buffer = vec![0; bounds.0 * bounds.1];
+
+    let threads = num_cpus::get();
+
+    println!(&quot;[INFO] detected {0} logical cores; spawning {0} threads...&quot;, threads);
+
+    let rows_per_stripe = bounds.1 / threads + 1;
+    {
+        let stripes: Vec&lt;&amp;mut [u8]&gt; = pixels_buffer
+            .chunks_mut(rows_per_stripe * bounds.0)
+            .collect();
+        crossbeam::scope(|spawner| {
+            for (i, stripe) in stripes.into_iter().enumerate() {
+                let top = rows_per_stripe * i;
+                let height = stripe.len() / bounds.0;
+                let stripe_bounds = (bounds.0, height);
+                let stripe_upper_left = pixel_to_complex(bounds, (0, top), upper_left, lower_right);
+                let stripe_lower_right =
+                    pixel_to_complex(bounds, (bounds.0, top + height), upper_left, lower_right);
+
+                spawner.spawn(move |_| {
+                    render(stripe, stripe_bounds, stripe_upper_left, stripe_lower_right);
+                });
+            }
+        })
+        .expect(&quot;failed to spawn threads&quot;);
+    }
+
+    write_image(&amp;arguments[1], &amp;pixels_buffer, bounds).expect(&quot;failed to write out to PNG file&quot;);
+}
+
+fn parse_pair&lt;T: FromStr&gt;(s: &amp;str, delimiter: char) -&gt; Option&lt;(T, T)&gt; {
+    match s.find(delimiter) {
+        None =&gt; None,
+        Some(index) =&gt; match (T::from_str(&amp;s[..index]), T::from_str(&amp;s[index + 1..])) {
+            (Ok(l), Ok(r)) =&gt; Some((l, r)),
+            _ =&gt; None,
+        },
+    }
+}
+
+#[test]
+fn test_parse_pair() {
+    assert_eq!(parse_pair::&lt;i32&gt;(&quot;&quot;, ','), None);
+    assert_eq!(parse_pair::&lt;i32&gt;(&quot;10,&quot;, ','), None);
+    assert_eq!(parse_pair::&lt;i32&gt;(&quot;,10&quot;, ','), None);
+    assert_eq!(parse_pair::&lt;i32&gt;(&quot;10,20&quot;, ','), Some((10, 20)));
+    assert_eq!(parse_pair::&lt;i32&gt;(&quot;10,20x&quot;, ','), None);
+    assert_eq!(parse_pair::&lt;f64&gt;(&quot;0.5x&quot;, 'x'), None);
+    assert_eq!(parse_pair::&lt;f64&gt;(&quot;0.5x1.5&quot;, 'x'), Some((0.5, 1.5)));
+}
+
+// Note: Rust has traits for specifying how types can be converted from
+// one to another – this can be an impl instead.
+fn parse_complex(s: &amp;str) -&gt; Option&lt;Complex&lt;f64&gt;&gt; {
+    match parse_pair(s, ',') {
+        Some((re, im)) =&gt; Some(Complex { re, im }),
+        None =&gt; None,
+    }
+}
+
+#[test]
+fn test_parse_complex() {
+    assert_eq!(
+        parse_complex(&quot;1.234,-0.0578&quot;),
+        Some(Complex {
+            re: 1.234,
+            im: -0.0578
+        })
+    );
+    assert_eq!(parse_complex(&quot;,-0.94&quot;), None);
+}
+
+/// Try to determine whether the complex number `c` is an element of the
+/// Mandelbrot set, clamping to at most `limit` iterations to to check.
+///
+/// If `c` is not an element of the Mandelbrot set, `Some(i)` is returned
+/// where `i` is the number of iterations needed to escape the circle
+/// (radius 2, centered at origin).
+///
+/// If `c` is in fact an element of the Mondelbrot set (i.e. we failed to
+/// prove that `c` is not an element of the Mandelbrot set within the
+/// iteration `limit`), `None` is returned.
+fn escape_time(c: Complex&lt;f64&gt;, limit: u32) -&gt; Option&lt;u32&gt; {
+    let mut z = Complex { re: 0.0, im: 0.0 };
+    for i in 0..limit {
+        z = z * z + c;
+        if z.norm_sqr() &gt; 4.0 {
+            return Some(i);
+        }
+    }
+
+    None
+}
+
+// Note: the function signature is lackluster at best. We can improve it
+// by using named structs in favor of anonymous tuples to help readability,
+// and `upper_left` and `lower_right` can be grouped together into some
+// struct, e.g. `ComplexPlaneConstraint`, as they usually are used together.
+fn pixel_to_complex(
+    bounds: (usize, usize),
+    pixel: (usize, usize),
+    upper_left: Complex&lt;f64&gt;,
+    lower_right: Complex&lt;f64&gt;,
+) -&gt; Complex&lt;f64&gt; {
+    let (width, height) = (
+        lower_right.re - upper_left.re,
+        upper_left.im - lower_right.im,
+    );
+
+    let (col, row) = (pixel.0 as f64, pixel.1 as f64);
+    let (img_width, img_height) = (bounds.0 as f64, bounds.1 as f64);
+
+    Complex {
+        re: upper_left.re + col * width / img_width,
+        // Note that the pixel y coordinate *increases* from top to down, but
+        // our view of the complex plane has the y coordinate / imaginary
+        // component *decreasing* from top to down.
+        im: upper_left.im - row * height / img_height,
+    }
+}
+
+#[test]
+fn test_pixel_to_complex() {
+    assert_eq!(
+        pixel_to_complex(
+            (100, 100),
+            (25, 75),
+            Complex { re: -1.0, im: 1.0 },
+            Complex { re: 1.0, im: -1.0 }
+        ),
+        Complex { re: -0.5, im: -0.5 }
+    );
+}
+
+fn render(
+    pixels: &amp;mut [u8],
+    bounds: (usize, usize),
+    upper_left: Complex&lt;f64&gt;,
+    lower_right: Complex&lt;f64&gt;,
+) {
+    // Precondition: require as many pixels in the buffer as the output
+    // image's resolution.
+    assert!(pixels.len() == bounds.0 * bounds.1);
+
+    for row in 0..bounds.1 {
+        for column in 0..bounds.0 {
+            let point = pixel_to_complex(bounds, (column, row), upper_left, lower_right);
+
+            pixels[row * bounds.0 + column] = match escape_time(point, 255) {
+                None =&gt; 0,
+                Some(iterations_count) =&gt; 255 - iterations_count as u8,
+            }
+        }
+    }
+}
+
+fn write_image(
+    filename: &amp;str,
+    pixels: &amp;[u8],
+    bounds: (usize, usize),
+) -&gt; Result&lt;(), std::io::Error&gt; {
+    let output = File::create(filename)?;
+
+    let (width, height) = (bounds.0 as u32, bounds.1 as u32);
+
+    let encoder = PNGEncoder::new(output);
+    encoder.encode(&amp;pixels, width, height, ColorType::Gray(8))?;
+
+    Ok(())
+}
+</code></pre></pre>
+<h2><a class="header" href="#the-rust-loop" id="the-rust-loop">The Rust <code>loop</code></a></h2>
+<p>Rust provides a convenient way to write an infinite loop via the <code>loop</code>
+keyword, instead of having to write <code>while (true)</code> such as in C.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>fn infinite_loop(mut x: f64) {
+	loop {
+		x = x * x;
+	}
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#the-num-package" id="the-num-package">The <code>num</code> Package</a></h2>
+<blockquote>
+<p>Reference: <a href="https://github.com/rust-num/num">rust-num/num</a></p>
+</blockquote>
+<p>The <code>num</code> package contains useful mathematical types, functions and definitions
+which could be useful.</p>
+<h3><a class="header" href="#the-complex-number" id="the-complex-number">The <code>Complex</code> Number</a></h3>
+<p><code>num</code> represents a complex number through its <code>Complex</code> structure (<code>struct</code>)
+type, with the real component <code>re</code> and the imaginary component <code>im</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct Complex&lt;T&gt; {
+	re: T,
+	im: T
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#the-optiont-type" id="the-optiont-type">The <code>Option&lt;T&gt;</code> Type</a></h2>
+<p>Rust's <code>Option&lt;T&gt;</code> <code>enum</code> type encodes the possibility of a missing value.
+This is to enforce the programming checking for both possibilities (present
+or missing) at compile time so we don't miss branches (compared to possible
+<code>null</code> pointers or values in other languages).</p>
+<p>It is defined as</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>enum Option&lt;T&gt; {
+	None,
+	Some(T)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>The <code>Option&lt;T&gt;</code> type has one type parameter <code>T</code>, or we can say that its
+variants (<code>None</code> and <code>Some(T)</code>) are generic over one type parameter <code>T</code> (even
+though <code>None</code> doesn't actually need type information from <code>T</code>).</p>
+<h2><a class="header" href="#documentation-comments" id="documentation-comments">Documentation Comments</a></h2>
+<p>Rust documentation comments begin with three slashes <code>///</code> and are associated
+with a <code>struct</code>, <code>enum</code>, functions, members, constants, etc.</p>
+<p>The <code>rustdoc</code> utility can produce document from such documentation comments
+and documentation tests (known as doctests) are supported.</p>
+<h2><a class="header" href="#generic-function" id="generic-function">Generic Function</a></h2>
+<p>To parse a complex number, we define <code>parse_pair</code> as a <em>generic function</em>
+for some type <code>T</code> which implements the trait <code>FromStr</code>, as defined in the
+type capture clause <code>&lt;T: FromStr&gt;</code>. This means that we can invoke <code>parse_pair</code>
+to try to parse a string <code>s</code> into a 2-tuple <code>(T, T)</code> separated by the
+<code>delimiter</code> character.</p>
+<p><code>T</code> is a <em>type parameter</em> to <code>parse_pair</code>, and on the call site we are able
+to either explicitly specify the type of <code>T</code> (like <code>parse_pair::&lt;i32&gt;</code>) or
+if enough type information exists the Rust compiler may be able to infer
+the type of <code>T</code> by information from the call site.</p>
+<p>In Rust, generic functions like <code>parse_pair</code> do not have run-time overheads
+for matching types. Instead, they behave like C++ templates in that the Rust
+compiler performs compile-time <em>monomorphisation</em> to generate specialized
+versions of <code>parse_pair</code> for every type for which <code>parse_pair</code> needs to work
+with (e.g. <code>parse_pair::&lt;i32&gt;</code> becomes something like <code>parse_pair_i32</code> but
+properly obfuscated to avoid name conflicts).</p>
+<h2><a class="header" href="#matching" id="matching">Matching</a></h2>
+<p>In Rust, <code>_</code> is a valid identifier. This is often useful for ignoring
+return values that are not needed, or to serve as a &quot;wildcard&quot; in <code>match</code>
+expressions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>match optional_expression {
+	Some(val) =&gt; {},
+	_ =&gt; {}
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#mapping-from-pixels-to-complex-numbers" id="mapping-from-pixels-to-complex-numbers">Mapping from Pixels to Complex Numbers</a></h2>
+<p>The coordinate space of pixels in the generated image needs to correspond to
+some point from the complex plane – this requires that we define some mapping</p>
+<p>\[
+\mathtt{pixel\_to\_complex} \colon \mathbb{Z}^2 \mapsto \mathbb{C
+}\]</p>
+<p>from the <em>pixel</em> cartesian coordinate \( (x, y) \in \mathbb{Z}^2 \) to
+a point in the complex plane \( \mathbb{C} \).</p>
+<h2><a class="header" href="#tuples" id="tuples">Tuples</a></h2>
+<p>Rust supports product types, or <code>tuple</code>s. A <code>tuple</code> may have zero or more
+members that can be different types:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>// 0-tuple: aka the `unit` type
+let unit: () = ();
+// 1-tuple
+let one_tuple: (f64) = (0.5);
+// 2-tuple
+let two_tuple: (f64, &amp;str) = (0.5, &quot;hello&quot;);
+<span class="boring">}
+</span></code></pre></pre>
+<p>Tuples support accessing by index (indices start from 0), e.g.</p>
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>	let three_tuple = (1, 'x', 0.9);
+	println!(&quot;three_tuple.0 = {}&quot;, three_tuple.0);
+	println!(&quot;three_tuple.1 = {}&quot;, three_tuple.1);
+	println!(&quot;three_tuple.2 = {}&quot;, three_tuple.2);
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#type-casting--coersion" id="type-casting--coersion">Type Casting / Coersion</a></h2>
+<p>The type cast / coersion expression <code>expression as T</code> tries to cast
+<code>expression</code> of type <code>U</code> into some type <code>T</code>.</p>
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>	let x: u64 = 123;
+	let y: f64 = x as f64;
+	println!(&quot;y = {}&quot;, y);
+<span class="boring">}
+</span></code></pre></pre>
+<p>Rust does not convert between numeric types implicitly to prevent issues such
+as floating-point errors and precision losses, and instead requires such
+casts to be explicitly written out, compared to C/C++.</p>
+<h2><a class="header" href="#working-with-images" id="working-with-images">Working with Images</a></h2>
+<blockquote>
+<p>Reference: <a href="https://github.com/image-rs/image">image-rs/image</a></p>
+</blockquote>
+<p>Rust has the <code>image</code> create for working with images of various formats.</p>
+<h2><a class="header" href="#the--operator" id="the--operator">The <code>?</code> Operator</a></h2>
+<p>The <code>?</code> operator is syntactical sugar for</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>match expression_evaluating_to_result {
+	Ok(f) =&gt; f,
+	Err(e) =&gt; { return Err(e); }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>given that the containing function returns <code>Result&lt;T, E&gt;</code> itself.</p>
+<p>For example,</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let output = File::create(filename)?;
+<span class="boring">}
+</span></code></pre></pre>
+<p>is equivalent in semantics to</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let output = match File::create(filename) {
+	Ok(f) =&gt; f,
+	Err(e) =&gt; { return Err(e); }
+};
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#vector-initialization-macro" id="vector-initialization-macro">Vector Initialization Macro</a></h2>
+<p>The <code>vec![v; n]</code> macro can be useful to create a <code>Vec</code> of size <code>n</code> with all
+elements initialized to <code>v</code>.</p>
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>	let vector = vec![5; 3];
+	println!(&quot;vector = {:?}&quot;, &amp;vector);
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#getting-concurrent" id="getting-concurrent">Getting Concurrent</a></h2>
+<p>We can divide the work of computing the image into sections, e.g. into
+horizontal stripes, so we can use <em>divide and conquer</em> to delegate work
+to different processors.</p>
+<blockquote>
+<p>Reference: <a href="https://github.com/crossbeam-rs/crossbeam">crossbeam-rs/crossbeam</a></p>
+</blockquote>
+<p>Rust has the <code>crossbeam</code> crate which has support for multiple concurrency
+tools, including <em>scoped thread</em>.</p>
+<blockquote>
+<p>Reference: <a href="https://github.com/seanmonstar/num_cpus">seanmonstar/num_cpus</a></p>
+</blockquote>
+<p>We spawn <code>n</code> threads where <code>n</code> is the number of logical cores on the system
+to do the work. Note: this requires careful profiling as the overhead of
+thread context-switching by the OS might overweigh the benefits brought by
+multiple threads.</p>
+<h2><a class="header" href="#example-output" id="example-output">Example Output</a></h2>
+<pre><code class="language-bash">cargo run mandelbrot.png 1000x500 -1.20,0.35 -1,0.20
+</code></pre>
+<p><img src="content/basics/../../examples/mandelbrot/mandelbrot.png" alt="Mandelbrot" /></p>
 
                     </main>
 
@@ -973,7 +1416,9 @@ them:</p>
         
         <script type="text/javascript">
         window.addEventListener('load', function() {
-            window.setTimeout(window.print, 100);
+            MathJax.Hub.Register.StartupHook('End', function() {
+                window.setTimeout(window.print, 100);
+            });
         });
         </script>
         
