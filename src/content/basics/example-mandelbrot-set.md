@@ -1,5 +1,7 @@
 # Example: Mandelbrot Set
 
+> Reference: Programming Rust
+
 > Reference: [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set)
 
 > "The Mandelbrot set is the set of complex numbers \\(c\\) for which the

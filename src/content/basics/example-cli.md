@@ -1,5 +1,7 @@
 # Example: Handling Command Line Arguments
 
+> Reference: Programming Rust
+
 ```rust
 use std::io::Write;
 use std::str::FromStr;

@@ -1,5 +1,7 @@
 # Basics
 
+> Reference: Programming Rust
+
 ## Function
 
 Rust adopts a C-like syntax, with the familiar scoping-by-braces syntax.

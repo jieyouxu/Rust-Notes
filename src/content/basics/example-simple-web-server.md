@@ -1,5 +1,7 @@
 # Example: Simple Web Server
 
+> Reference: Programming Rust
+
 We can create a simple web server to serve a static HTML page as the front
 end to our `gcd` function.
 

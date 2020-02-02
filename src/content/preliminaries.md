@@ -1,5 +1,7 @@
 # Preliminaries
 
+> Reference: Programming Rust
+
 Rust is a systems programming language with type safety and efficiency in mind.
 
 ## Infrastructure, Toolchain and Utilities
