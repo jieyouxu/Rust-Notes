@@ -15,7 +15,7 @@ $ cd gcd_web_server_v1
 > Reference: [Cargo.toml Manifest](https://doc.rust-lang.org/cargo/reference/manifest.html)
 
 ```toml
-{{#include ../../../examples/gcd_web_server_v1/Cargo.toml}}
+{{#include ../../examples/gcd_web_server_v1/Cargo.toml}}
 ```
 
 Note that the `[dependencies]` section in the `Cargo.toml` file specifies the
@@ -24,7 +24,7 @@ names and versions of crates published on [crates.io](https://crates.io).
 ## Version 1
 
 ```rust
-{{#include ../../../examples/gcd_web_server_v1/src/main.rs::93}}
+{{#include ../../examples/gcd_web_server_v1/src/main.rs::93}}
 ```
 
 > Reference: [iron 0.6.1](http://ironframework.io/)

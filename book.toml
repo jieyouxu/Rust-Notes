@@ -7,3 +7,4 @@ title = "Rust Notes"
 
 [output.html]
 theme = "src/theme"
+mathjax-support = true
