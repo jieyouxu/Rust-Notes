@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -1378,6 +1378,162 @@ multiple threads.</p>
 <pre><code class="language-bash">cargo run mandelbrot.png 1000x500 -1.20,0.35 -1,0.20
 </code></pre>
 <p><img src="content/basics/../../examples/mandelbrot/mandelbrot.png" alt="Mandelbrot" /></p>
+<h1><a class="header" href="#basic-types" id="basic-types">Basic Types</a></h1>
+<blockquote>
+<p>Reference: Programming Rust</p>
+</blockquote>
+<p>Rust has a few goals for the design of its type system, namely:</p>
+<ol>
+<li>
+<p>***<strong>Safety</strong>:</p>
+<p>Rust has a <em>strong</em>, <em>itatic</em> type system which helps to rule out some
+classes of mistakes at compile-time (e.g. spelling mistakes!). For notorious
+errros such as <code>null</code> references and pointers, Rust adopts type-level
+guarantees such as the <code>Option</code> type and the <code>Result</code> type to force the user
+to handle the different possibilities instead of delaying to exceptions in
+run time.</p>
+</li>
+<li>
+<p><strong>Efficiency</strong>:</p>
+<p>Rust's type system is strong enough to allow fine-grained control over the
+level of abstractions that is suitable to the programmer's problem domain.
+When the programmer needs bare-metal / machine-level access, Rust has
+support for such needs. Conversely, Rust's type system also supports
+higher-level constructs such as <em>Algebraic Data Types</em> (via <code>enum</code>),
+<code>struct</code>s, as well as <code>trait</code>s and generics. Currently, Rust also has
+experimental support for associated types and constants, and is exploring
+support towards <em>dependent types</em>, <em>refinement types</em>, <em>generic ADTs</em>,
+<em>higher-kinded types</em> and more.</p>
+</li>
+<li>
+<p><strong>Concision</strong>:</p>
+<p>Rust has a good level of type inference built into the compiler. This means
+that the Rust compiler is able to perform much of the type inference
+requirement so users don't have to give explicit type signatures.</p>
+</li>
+</ol>
+<p>As of right now, Rust is *<em>compiled</em>.</p>
+<h2><a class="header" href="#list-of-basic-types" id="list-of-basic-types">List of Basic Types</a></h2>
+<table><thead><tr><th>Type</th><th>Description</th><th>Example Value(s)</th></tr></thead><tbody>
+<tr><td><code>i8</code>, <code>i16</code>, <code>i32</code>, <code>i64</code></td><td>Signed integers, fixed number of bits</td><td><code>-32</code></td></tr>
+<tr><td><code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code></td><td>Unsigned integers, fixed number of bits</td><td><code>0</code></td></tr>
+<tr><td><code>isize</code>, <code>usize</code></td><td>Machine-sized unsigned and signed integers</td><td><code>16</code></td></tr>
+<tr><td><code>f32</code>, <code>f64</code></td><td>IEEE-754 compliant floating-point numbers</td><td><code>1.45</code>, <code>1.4f32</code></td></tr>
+<tr><td><code>bool</code></td><td>Boolean</td><td><code>true</code>, <code>false</code></td></tr>
+<tr><td><code>char</code></td><td>UTF-8 character, 32-bits</td><td><code>*</code></td></tr>
+<tr><td><code>()</code></td><td>Unit type</td><td><code>()</code></td></tr>
+<tr><td><code>(char, i32)</code></td><td>Tuple type (mixed product type)</td><td><code>('b', 0)</code></td></tr>
+<tr><td><code>struct S { x: i32, y: f32 }</code></td><td>Struct with named fields</td><td><code>S { x: 0, y: 1.0 }</code></td></tr>
+<tr><td><code>struct T(i32, char);</code></td><td>Tuple-like structure (gives name)</td><td><code>T(0, 'a')</code></td></tr>
+<tr><td><code>struct E</code></td><td>Unit-like struct, no fields, zero-sized</td><td><code>E</code></td></tr>
+<tr><td><code>enum Option&lt;T&gt; { Some(T), None }</code></td><td>Enum, algebraic data type (ADT)</td><td><code>Option::Some(2)</code>, <code>Option::None</code></td></tr>
+<tr><td><code>Box&lt;Attend&gt;</code></td><td><code>Box</code> is an owning-pointer to some value allocated in heap</td><td><code>Box::new(3)</code></td></tr>
+<tr><td><code>&amp;T</code></td><td>Immutable shared reference to some type <code>T</code>, non-owning</td><td><code>&amp;name</code></td></tr>
+<tr><td><code>&amp;mut T</code></td><td>Mutable reference to some type <code>T</code>, non-owning</td><td><code>&amp;mut name</code></td></tr>
+<tr><td><code>String</code></td><td>Dynamically-sized UTF-8 string, owned</td><td><code>&quot;Hello World&quot;</code></td></tr>
+<tr><td><code>&amp;str</code></td><td>Non-owning reference to <code>str</code></td><td><code>&amp;s[0..12]</code></td></tr>
+<tr><td><code>[T; N]</code></td><td>Fixed-length array of homogeneous type <code>T</code> of size <code>N</code></td><td><code>[0; 256]</code></td></tr>
+<tr><td><code>Vec&lt;T&gt;</code></td><td>Dynamically-sized vector of homogeneous type <code>T</code></td><td><code>vec![0, 1, 2]</code></td></tr>
+<tr><td><code>&amp;[T]</code></td><td>Immutable reference to a <em>slice</em>, a view into (a part of) an array</td><td><code>&amp;v[1..3]</code>, <code>&amp;x[..]</code></td></tr>
+<tr><td><code>&amp;mut [T]</code></td><td>Mutable reference to a <em>slice</em></td><td><code>&amp;mut v[1..3]</code></td></tr>
+<tr><td><code>&amp;Trait</code></td><td>Immutable reference to any value which implements the trait <code>Trait</code></td><td><code>value as &amp;Any</code></td></tr>
+<tr><td><code>&amp;mut Trait</code></td><td>Mutable reference to any value which implements the trait <code>Trait</code></td><td><code>value as &amp;mut Any</code></td></tr>
+<tr><td><code>fn(&lt;param&gt;, ...) -&gt; R</code></td><td>Pointer to function with parameters <code>&lt;param&gt;, ...</code> and return type <code>R</code></td><td><code>i32::saturating_add</code></td></tr>
+<tr><td>`</td><td><param>, ...</td><td><expr>`</td></tr>
+</tbody></table>
+<h2><a class="header" href="#note-on-usize-and-isize" id="note-on-usize-and-isize">Note on <code>usize</code> and <code>isize</code></a></h2>
+<p>These two types, <code>usize</code> and <code>isize</code>, correspond to the size of a pointer on the
+target platform – meaning that different target platforms may produce different
+sizes.</p>
+<h2><a class="header" href="#arithmetic-overflow-checks" id="arithmetic-overflow-checks">Arithmetic Overflow Checks</a></h2>
+<p>In <em>debug</em> builds, Rust checks for integer overflows and would produce a panic.</p>
+<p>However, in <em>release</em> builds, overflows and underflows would cause <em>wrap</em>
+behaviour. This should <em>not</em> be relied upon, and instead if the wrap behaviour
+is intended, the <code>wrapping_add</code> method in <code>i*</code> and <code>u*</code> types should be used.</p>
+<h2><a class="header" href="#integer-and-floating-point-number-literals" id="integer-and-floating-point-number-literals">Integer and Floating-Point Number Literals</a></h2>
+<h3><a class="header" href="#suffixes" id="suffixes">Suffixes</a></h3>
+<p>Integer literals may have their types appended, such as <code>32u8</code> to indicate the
+size intended. The appended suffixes may also be omitted in which Rust will try
+to infer the most suitable type, usually defaulting to the corresponding <code>isize</code>
+which is usually the most efficient integer size on the target platform.</p>
+<h3><a class="header" href="#prefixes" id="prefixes">Prefixes</a></h3>
+<p>Rust allows binary, octet and hexadecimal literals as well, by prefixing <code>0b</code>,
+<code>0o</code> and <code>0x</code> prefixes respectively.</p>
+<h3><a class="header" href="#underscores" id="underscores">Underscores</a></h3>
+<p>To separate the digits, Rust allows underscores <code>_</code> in between digits which are
+discarded, e.g.<code>1_000_000</code>.</p>
+<h3><a class="header" href="#byte-literals" id="byte-literals">Byte Literals</a></h3>
+<p>Rust allows <em>byte literals</em> by prepending a <code>b</code> in front of single quote, e.g.
+<code>b'\''</code> which is the numerical value of a single quote in ASCII.</p>
+<h3><a class="header" href="#type-casting" id="type-casting">Type Casting</a></h3>
+<p>Conversions between different numerical types are possible through type casts
+via the <code>as</code> operator, e.g. <code>10u8 as u16</code>.</p>
+<h2><a class="header" href="#boolean-type" id="boolean-type">Boolean Type</a></h2>
+<p>The <code>bool</code> type in Rust is very strict – no implicit conversions from other
+types to <code>bool</code> is predefined, so there are no notions of &quot;truthy&quot; or &quot;falsey&quot;
+values.</p>
+<h2><a class="header" href="#characters-and-strings" id="characters-and-strings">Characters and Strings</a></h2>
+<p>Unlike in C, Rust's <code>char</code> type is a UTF-8 character, meaning that <code>char</code> is
+32-bits or 4-bytes.</p>
+<p>Rust <code>String</code> is <em>not</em> a vector of <code>char</code>s; instead, <code>String</code> is a vector of
+UTF-8 bytes because some characters could be double-width.</p>
+<p>Typical escape characters are supported in character and string literals.</p>
+<h3><a class="header" href="#escape-sequences" id="escape-sequences">Escape Sequences</a></h3>
+<table><thead><tr><th>Character</th><th>Literal</th></tr></thead><tbody>
+<tr><td>Single Quote</td><td><code>'\''</code></td></tr>
+<tr><td>Backslash</td><td><code>'\\'</code></td></tr>
+<tr><td>Newline</td><td><code>'\n'</code></td></tr>
+<tr><td>Carriage return</td><td><code>'\'r</code></td></tr>
+<tr><td>Tab</td><td><code>'\t'</code></td></tr>
+</tbody></table>
+<p>Additionally, the code point could be written out:</p>
+<ul>
+<li>For Unicode point between <code>U+0000</code> and <code>U+007F</code>, characters may be written as
+<code>\xHH</code> with <code>HH</code> being two hex digits.</li>
+<li>For Unicode point beyond that range, characters may be written as <code>\u{HHHHHH}</code>
+where <code>HHHHHH</code> are hex digits.</li>
+</ul>
+<p>A <code>char</code> may <em>not</em> be a surrogate pair half.</p>
+<h2><a class="header" href="#pointer-types" id="pointer-types">Pointer Types</a></h2>
+<p>Rust does <em>not</em> have garbage collection to minimize heap allocations and stack
+allocations are preferred by default.</p>
+<h3><a class="header" href="#references" id="references">References</a></h3>
+<p>A <code>&amp;T</code> is a shared (immutable) reference to some type <code>T</code>. It can point to some
+memory location either in the stack of the heap.</p>
+<ul>
+<li><code>&amp;x</code> <em>borrows</em> a reference to <code>x</code>.</li>
+<li>Given some reference <code>r</code>, <code>*r</code> dereferences the reference to get its value.</li>
+</ul>
+<p>Rust references are <em>never</em> <code>null</code> and immutable by default.</p>
+<p>A <code>&amp;mut T</code> is a mutable reference to some type <code>T</code>.</p>
+<p>By tracking ownership + lifetimes of values, Rust can avoid mistakes such as:</p>
+<ul>
+<li>dangling pointers;</li>
+<li>double frees; and</li>
+<li>pointer invalidation.</li>
+</ul>
+<h3><a class="header" href="#boxes" id="boxes">Boxes</a></h3>
+<p><code>Box</code>es are the simplest way to perform a heap allocation.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let x = 12;
+// b: Box&lt;i32&gt;
+let b = Box::new(x);
+<span class="boring">}
+</span></code></pre></pre>
+<p>When <code>b</code> goes out of scope, the memory is freed and reclaimed <em>unless</em> the value
+<code>b</code> is <em>moved</em>, such as by returning it.</p>
+<h3><a class="header" href="#raw-pointers" id="raw-pointers">Raw Pointers</a></h3>
+<p>Rust also provides the raw pointer types:</p>
+<ol>
+<li>immutable raw pointer: <code>*const T</code>; and</li>
+<li>mutable raw pointer: <code>*mut T</code>.</li>
+</ol>
+<p>Such usage of raw pointers are inherently unsafe and dereferences must be
+performed within <code>unsafe {}</code> blocks, to opt-out of the borrow-checker. It is up
+to the programmer, then, to ensure memory safety and coherence within <code>unsafe</code>
+blocks.</p>
 
                     </main>
 
