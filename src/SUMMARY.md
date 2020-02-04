@@ -8,3 +8,5 @@
 	+ [Example: Simple Web Server](content/basics/example-simple-web-server.md)
 	+ [Basic Concurrency](content/basics/concurrency.md)
 	+ [Example: Mandelbrot Set](content/basics/example-mandelbrot-set.md)
+- [Basic Types](content/basic-types/index.md)
+
