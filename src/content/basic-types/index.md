@@ -4,9 +4,9 @@
 
 Rust has a few goals for the design of its type system, namely:
 
-1. *****Safety**:
+1. **Safety**:
 
-	Rust has a *strong*, *itatic* type system which helps to rule out some
+	Rust has a *strong*, *static* type system which helps to rule out some
 	classes of mistakes at compile-time (e.g. spelling mistakes!). For notorious
 	errros such as `null` references and pointers, Rust adopts type-level
 	guarantees such as the `Option` type and the `Result` type to force the user
