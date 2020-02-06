@@ -185,7 +185,7 @@ that the Rust compiler is able to perform much of the type inference
 requirement so users don't have to give explicit type signatures.</p>
 </li>
 </ol>
-<p>As of right now, Rust is *<em>compiled</em>.</p>
+<p>As of right now, Rust is <em>compiled</em>.</p>
 <h2><a class="header" href="#list-of-basic-types" id="list-of-basic-types">List of Basic Types</a></h2>
 <table><thead><tr><th>Type</th><th>Description</th><th>Example Value(s)</th></tr></thead><tbody>
 <tr><td><code>i8</code>, <code>i16</code>, <code>i32</code>, <code>i64</code></td><td>Signed integers, fixed number of bits</td><td><code>-32</code></td></tr>
@@ -212,7 +212,7 @@ requirement so users don't have to give explicit type signatures.</p>
 <tr><td><code>&amp;Trait</code></td><td>Immutable reference to any value which implements the trait <code>Trait</code></td><td><code>value as &amp;Any</code></td></tr>
 <tr><td><code>&amp;mut Trait</code></td><td>Mutable reference to any value which implements the trait <code>Trait</code></td><td><code>value as &amp;mut Any</code></td></tr>
 <tr><td><code>fn(&lt;param&gt;, ...) -&gt; R</code></td><td>Pointer to function with parameters <code>&lt;param&gt;, ...</code> and return type <code>R</code></td><td><code>i32::saturating_add</code></td></tr>
-<tr><td>`</td><td><param>, ...</td><td><expr>`</td></tr>
+<tr><td><code>&amp;#x7c; &lt;param&gt;, ... &amp;#x7c; &lt;expr&gt;</code></td><td>Closure capturing parameters <code>&lt;param, ...</code> with body <code>&lt;expr&gt;</code></td><td><code> &amp;#x7c; a, b &amp;#x7c; a + b</code></td></tr>
 </tbody></table>
 <h2><a class="header" href="#note-on-usize-and-isize" id="note-on-usize-and-isize">Note on <code>usize</code> and <code>isize</code></a></h2>
 <p>These two types, <code>usize</code> and <code>isize</code>, correspond to the size of a pointer on the
@@ -307,6 +307,8 @@ let b = Box::new(x);
 performed within <code>unsafe {}</code> blocks, to opt-out of the borrow-checker. It is up
 to the programmer, then, to ensure memory safety and coherence within <code>unsafe</code>
 blocks.</p>
+<h3><a class="header" href="#arrays-vectors-and-slices" id="arrays-vectors-and-slices">Arrays, Vectors and Slices</a></h3>
+<p>Rust has three basic types for representing a contiguous sequence of values in</p>
 
                     </main>
 
