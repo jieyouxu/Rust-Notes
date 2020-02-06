@@ -31,37 +31,37 @@ Rust has a few goals for the design of its type system, namely:
 	that the Rust compiler is able to perform much of the type inference
 	requirement so users don't have to give explicit type signatures.
 
-As of right now, Rust is **compiled*.
+As of right now, Rust is *compiled*.
 
 ## List of Basic Types
 
-| Type                               | Description                                                            | Example Value(s)                  |
-| --- | --- | --- |
-| `i8`, `i16`, `i32`, `i64`          | Signed integers, fixed number of bits                                  | `-32`                             |
-| `u8`, `u16`, `u32`, `u64`          | Unsigned integers, fixed number of bits                                | `0`                               |
-| `isize`, `usize`                   | Machine-sized unsigned and signed integers                             | `16`                              |
-| `f32`, `f64`                       | IEEE-754 compliant floating-point numbers                              | `1.45`, `1.4f32`                  |
-| `bool`                             | Boolean                                                                | `true`, `false`                   |
-| `char`                             | UTF-8 character, 32-bits                                               | `*`                               |
-| `()`                               | Unit type                                                              | `()`                              |
-| `(char, i32)`                      | Tuple type (mixed product type)                                        | `('b', 0)`                        |
-| `struct S { x: i32, y: f32 }`      | Struct with named fields                                               | `S { x: 0, y: 1.0 }`              |
-| `struct T(i32, char);`             | Tuple-like structure (gives name)                                      | `T(0, 'a')`                       |
-| `struct E`                         | Unit-like struct, no fields, zero-sized                                | `E`                               |
-| `enum Option<T> { Some(T), None }` | Enum, algebraic data type (ADT)                                        | `Option::Some(2)`, `Option::None` |
-| `Box<Attend>`                      | `Box` is an owning-pointer to some value allocated in heap             | `Box::new(3)`                     |
-| `&T`                               | Immutable shared reference to some type `T`, non-owning                | `&name`                           |
-| `&mut T`                           | Mutable reference to some type `T`, non-owning                         | `&mut name`                       |
-| `String`                           | Dynamically-sized UTF-8 string, owned                                  | `"Hello World"`                   |
-| `&str`                             | Non-owning reference to `str`                                          | `&s[0..12]`                       |
-| `[T; N]`                           | Fixed-length array of homogeneous type `T` of size `N`                 | `[0; 256]`                        |
-| `Vec<T>`                           | Dynamically-sized vector of homogeneous type `T`                       | `vec![0, 1, 2]`                   |
-| `&[T]`                             | Immutable reference to a *slice*, a view into (a part of) an array     | `&v[1..3]`, `&x[..]`              |
-| `&mut [T]`                         | Mutable reference to a *slice*                                         | `&mut v[1..3]`                    |
-| `&Trait`                           | Immutable reference to any value which implements the trait `Trait`    | `value as &Any`                   |
-| `&mut Trait`                       | Mutable reference to any value which implements the trait `Trait`      | `value as &mut Any`               |
-| `fn(<param>, ...) -> R`            | Pointer to function with parameters `<param>, ...` and return type `R` | `i32::saturating_add`             |
-| `|<param>, ...| <expr>`            | Closure capturing parameters `<param, ...` with body `<expr>`          | `| a, b | a + b`                  |
+| Type                                | Description                                                            | Example Value(s)                  |
+| ----------------------------------  | ---------------------------------------------------------------------- | --------------------------------- |
+| `i8`, `i16`, `i32`, `i64`           | Signed integers, fixed number of bits                                  | `-32`                             |
+| `u8`, `u16`, `u32`, `u64`           | Unsigned integers, fixed number of bits                                | `0`                               |
+| `isize`, `usize`                    | Machine-sized unsigned and signed integers                             | `16`                              |
+| `f32`, `f64`                        | IEEE-754 compliant floating-point numbers                              | `1.45`, `1.4f32`                  |
+| `bool`                              | Boolean                                                                | `true`, `false`                   |
+| `char`                              | UTF-8 character, 32-bits                                               | `*`                               |
+| `()`                                | Unit type                                                              | `()`                              |
+| `(char, i32)`                       | Tuple type (mixed product type)                                        | `('b', 0)`                        |
+| `struct S { x: i32, y: f32 }`       | Struct with named fields                                               | `S { x: 0, y: 1.0 }`              |
+| `struct T(i32, char);`              | Tuple-like structure (gives name)                                      | `T(0, 'a')`                       |
+| `struct E`                          | Unit-like struct, no fields, zero-sized                                | `E`                               |
+| `enum Option<T> { Some(T), None }`  | Enum, algebraic data type (ADT)                                        | `Option::Some(2)`, `Option::None` |
+| `Box<Attend>`                       | `Box` is an owning-pointer to some value allocated in heap             | `Box::new(3)`                     |
+| `&T`                                | Immutable shared reference to some type `T`, non-owning                | `&name`                           |
+| `&mut T`                            | Mutable reference to some type `T`, non-owning                         | `&mut name`                       |
+| `String`                            | Dynamically-sized UTF-8 string, owned                                  | `"Hello World"`                   |
+| `&str`                              | Non-owning reference to `str`                                          | `&s[0..12]`                       |
+| `[T; N]`                            | Fixed-length array of homogeneous type `T` of size `N`                 | `[0; 256]`                        |
+| `Vec<T>`                            | Dynamically-sized vector of homogeneous type `T`                       | `vec![0, 1, 2]`                   |
+| `&[T]`                              | Immutable reference to a *slice*, a view into (a part of) an array       | `&v[1..3]`, `&x[..]`              |
+| `&mut [T]`                          | Mutable reference to a *slice*                                           | `&mut v[1..3]`                    |
+| `&Trait`                            | Immutable reference to any value which implements the trait `Trait`    | `value as &Any`                   |
+| `&mut Trait`                        | Mutable reference to any value which implements the trait `Trait`      | `value as &mut Any`               |
+| `fn(<param>, ...) -> R`             | Pointer to function with parameters `<param>, ...` and return type `R` | `i32::saturating_add`             |
+| `&#x7c; <param>, ... &#x7c; <expr>` | Closure capturing parameters `<param, ...` with body `<expr>`          | ` &#x7c; a, b &#x7c; a + b`       |
 
 ## Note on `usize` and `isize`
 
@@ -188,4 +188,8 @@ Such usage of raw pointers are inherently unsafe and dereferences must be
 performed within `unsafe {}` blocks, to opt-out of the borrow-checker. It is up
 to the programmer, then, to ensure memory safety and coherence within `unsafe`
 blocks.
+
+### Arrays, Vectors and Slices
+
+Rust has three basic types for representing a contiguous sequence of values in
 
