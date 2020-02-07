@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -2140,6 +2140,42 @@ let first_name = std::mem::replace(&amp;mut users[0].name, None);
 </span></code></pre></pre>
 <p>Here, <code>std::mem::take()</code> simply moves the target value out and substitutes the
 default value for the type <code>T</code> in-place.</p>
+<h1><a class="header" href="#copy-types" id="copy-types">Copy Types</a></h1>
+<p>Types such as large structs, vectors, strings and other heap-allocated data
+types may be expensive to copy and so they are more suited for <em>move</em>s.</p>
+<p>Some types such as integers and characters are cheap to copy, which may make it
+more efficient compared to a move.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let x: i32 = 1; 	// not dropped
+let y = x; 			// value of `x` copied into `y`
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#the-copy-trait" id="the-copy-trait">The <code>Copy</code> Trait</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/marker/trait.Copy.html">std::marker::Copy</a></p>
+</blockquote>
+<p>Any type which implements the <code>Copy</code> trait will be copied when assigning a value
+instead of being moved, leaving the source of the assignment still initialized
+and the target of the assignment receiving a copy.</p>
+<p>Note that only types which can be copied bit-for-bit can properly qualify as a
+<code>Copy</code> type.</p>
+<h3><a class="header" href="#user-defined-copy-types" id="user-defined-copy-types">User-Defined Copy Types</a></h3>
+<p>Rust makes user-defined <code>struct</code>s and <code>enum</code>s are not <code>Copy</code> by default.</p>
+<ul>
+<li>If all of the fields of the <code>struct</code> is <code>Copy</code>; or</li>
+<li>if all of the variants of the <code>enum</code> is <code>Copy</code>; then</li>
+</ul>
+<p>The user can <em>mark</em> the user-defined <code>struct</code> or <code>enum</code> as a <code>Copy</code> type by
+annotating the type definition with the <code>#[derive(Copy)]</code> attribute.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>#[derive(Copy)]
+struct Label { id: u32 }
+<span class="boring">}
+</span></code></pre></pre>
 
                     </main>
 
