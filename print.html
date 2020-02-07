@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -2176,6 +2176,62 @@ annotating the type definition with the <code>#[derive(Copy)]</code> attribute.<
 struct Label { id: u32 }
 <span class="boring">}
 </span></code></pre></pre>
+<h1><a class="header" href="#shared-ownership" id="shared-ownership">Shared Ownership</a></h1>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/rc/struct.Rc.html">std::rc::Rc</a></p>
+</blockquote>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/sync/struct.Arc.html">std::sync::Arc</a></p>
+</blockquote>
+<p>The single-owner restriction by default helps to prevent some nasty memory bugs
+– but it is also a trade-off in expressiveness. Sometimes it is difficult to
+find a single owner which has the suitable lifetime, and the programmer may want
+a value to live until there are no more references to it. Rust provides:</p>
+<ul>
+<li><strong>Reference-Counted Pointer</strong> <code>Rc</code>.</li>
+<li><strong>Atomically Reference-Counted Pointer</strong> <code>Arc</code> (thread-safe).</li>
+</ul>
+<p>Rust's type system and the borrow checker helps to enforce safe usage of these
+shared references types.</p>
+<ul>
+<li><code>Rc</code> is not thread-safe, and so has less overhead compared to <code>Arc</code> when there
+is no need for multi-threading.</li>
+</ul>
+<h2><a class="header" href="#reference-counted-pointer-rc" id="reference-counted-pointer-rc">Reference-Counted Pointer <code>Rc</code></a></h2>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>use std::rc::Rc;
+
+let a: Rc&lt;String&gt; = Rc::new(&quot;hello&quot;.to_string());
+let b = a.clone();
+let c = a.clone();
+<span class="boring">}
+</span></code></pre></pre>
+<p>The type <code>Rc&lt;T&gt;</code> for any type <code>T</code> is a pointer to the heap-allocated <code>T</code> type
+which has a reference count context associated with it.</p>
+<ul>
+<li>Cloning the <code>Rc&lt;T&gt;</code> does <em>not</em> copy the <code>T</code> value itself but instead creates a
+new pointer to it and increments the reference count.</li>
+<li>Each of <code>a</code>, <code>b</code> <code>c</code> <code>Rc&lt;String&gt;</code> pointers refer to the same heap memory
+containing a reference count and suitable space for holding the <code>String</code>.</li>
+<li>Whenever a <code>Rc&lt;String&gt;</code> pointer goes out of scope, then the reference count
+decrements by one.</li>
+<li>When all of the <code>Rc&lt;String&gt;</code> pointers go out of scope, and the reference count
+becomes zero, then it is safe to drop the <code>String</code> as well.</li>
+</ul>
+<p>Values owned by <code>Rc&lt;T&gt;</code> pointers are <em>immutable</em>:</p>
+<ul>
+<li>Rust presents values from being simultaneously shared <em>and</em> mutable, which is
+a recipe for disaster.</li>
+</ul>
+<h3><a class="header" href="#a-cyclic-dependency" id="a-cyclic-dependency">A Cyclic Dependency</a></h3>
+<p>Trying to manage memory with reference counts come with its own chanllenges:</p>
+<ul>
+<li>If there exists two reference-counted pointers pointing to each other, they
+will lock-up each other's reference count ( &gt; 0 ) and so the values will
+never be freed.</li>
+</ul>
 
                     </main>
 
