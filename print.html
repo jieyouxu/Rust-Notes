@@ -1935,6 +1935,18 @@ cycles, <em>but</em> this limitation is precisely what grants safe Rust memory s
 as a doubly linked list due to the restriction on cyclic ownership in safe
 Rust. This is the case for the careful use of <code>unsafe</code> Rust.</p>
 <p>For more flexibility, Rust also incorporates the concepts of:</p>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/rust-by-example/scope/move.html">Rustnomicon | Ownership and moves</a></p>
+</blockquote>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/rc/index.html">std::rc</a></p>
+</blockquote>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/sync/struct.Arc.html">std::sync::Arc</a></p>
+</blockquote>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/nomicon/lifetimes.html">Rustnomicon | Lifetimes</a></p>
+</blockquote>
 <ul>
 <li><strong>Moves</strong>: it is possible to move values from one owner to another owner,
 allowing the programmer to build, rearrange and teardown the ownership tree.</li>
