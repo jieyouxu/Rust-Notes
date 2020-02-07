@@ -307,8 +307,267 @@ let b = Box::new(x);
 performed within <code>unsafe {}</code> blocks, to opt-out of the borrow-checker. It is up
 to the programmer, then, to ensure memory safety and coherence within <code>unsafe</code>
 blocks.</p>
-<h3><a class="header" href="#arrays-vectors-and-slices" id="arrays-vectors-and-slices">Arrays, Vectors and Slices</a></h3>
-<p>Rust has three basic types for representing a contiguous sequence of values in</p>
+<h2><a class="header" href="#arrays-vectors-and-slices" id="arrays-vectors-and-slices">Arrays, Vectors and Slices</a></h2>
+<p>Rust has three basic types for representing a contiguous sequence of values in
+memory:</p>
+<ol>
+<li>
+<p><strong>Fixed-size Array</strong>: <code>[T; N]</code></p>
+<p>Represents an an array of <code>N</code> values of type <code>T</code>. The size of an array is
+determined at compile-time and is enforced as part of the type; immutable.</p>
+</li>
+<li>
+<p><strong>Vector</strong>: <code>Vec&lt;T&gt;</code></p>
+<p>Represents a dynamically allocated sequence of values of type <code>T</code>. Elements
+of a vector lives on the heap to allow resizing.</p>
+</li>
+<li>
+<p><strong>Shared Slices</strong>: <code>&amp;[T]</code> and <code>&amp;mut [T]</code></p>
+<ul>
+<li>
+<p><em>Shared slice</em>: <code>&amp;[T]</code>. A reference to a sequence of elements which is
+part of some container such as an array or vector. Can be a sub-range of
+the container. Immutable reference.</p>
+</li>
+<li>
+<p><em>Mutable slice</em>: <code>&amp;mut [T]</code>. A reference to a sequence of element of some
+container, can be used to modify arguments but cannot be shared.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>The length can be obtained for each of these container types via the <code>len()</code>
+function defined for these types. Accessing an element at index <code>i</code> can be done
+via <code>v[i]</code> where <code>v</code> is the name of the container. Out-of-bounds will produce a
+panic, and indicies into such container types is required to be of type <code>usize</code>.</p>
+<h3><a class="header" href="#arrays" id="arrays">Arrays</a></h3>
+<h4><a class="header" href="#array-literals" id="array-literals">Array Literals</a></h4>
+<p>Array literals can be declared with the syntax</p>
+<pre><code>name: [T; N] = [&lt;element&gt;, ...];
+</code></pre>
+<p>With <code>T</code> being the type and <code>N</code> the number of elements.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let elements: [u32; 6] = [1, 2, 3, 4, 5, 6];
+let strings = [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;];
+<span class="boring">}
+</span></code></pre></pre>
+<p>Additionally, it is possible to initialize the entire array</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let elements = [true; 100];
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#vectors" id="vectors">Vectors</a></h3>
+<p>Each vector <code>Vec&lt;T&gt;</code> is a resizable array allocated on the heap, containing
+elements of type <code>T</code>.</p>
+<p>The <code>vec!</code> macro may be used to create a vector, similar in syntax to arrays.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut v = vec![1, 2, 3];
+<span class="boring">}
+</span></code></pre></pre>
+<p>Again, it is possible to repeat some value for a number of times</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut v = vec![true; 100];
+<span class="boring">}
+</span></code></pre></pre>
+<p>The <code>vec!</code> macro is a syntax sugar for creating a new vector via <code>Vector::new</code>
+and pushing the desired elements on to it via <code>v.push()</code>.</p>
+<p>It is also possible to build a vector from an iterator, such as</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let v: Vec&lt;i32&gt; = (0..5).collect();
+<span class="boring">}
+</span></code></pre></pre>
+<h4><a class="header" href="#initializing-with-capacity" id="initializing-with-capacity">Initializing with Capacity</a></h4>
+<p>To resize the internal array representation within a <code>Vec&lt;T&gt;</code>, Rust will need to
+create a larger new array and copy contents from the old array over. This is
+both space and time costly, so the programmer should take care to specify a
+suitable initial capacity whenever possible, by using the alternative
+constructor <code>Vec::with_capacity</code>.</p>
+<h3><a class="header" href="#slices" id="slices">Slices</a></h3>
+<p>A <em>slice</em> <code>[T]</code> (with no length specified) represents a <em>region</em> of an array or
+vector, and is always passed by reference since the length is arbitrary.</p>
+<p>A reference to some slice is a <em>fat pointer</em>, containing:</p>
+<table><thead><tr><th>Word</th><th>Value</th></tr></thead><tbody>
+<tr><td><code>0</code></td><td>Pointer to element <code>i = 0</code> of the slice</td></tr>
+<tr><td><code>1</code></td><td>Number of elements contained in the slice</td></tr>
+</tbody></table>
+<p>Rust is able to automatically convert between <code>&amp;Vec&lt;T&gt;</code> and <code>&amp;[T; N]</code> slice
+references given the sizes are compatible.</p>
+<p>Compared to normal references, a slice reference is a <em>non-owning</em> pointer to
+multiple values (technically, to the first element of the part of the container
+with multiple elements).</p>
+<h4><a class="header" href="#sub-slicing" id="sub-slicing">Sub-slicing</a></h4>
+<p>A reference to a slice of an array or vector, or a sub-slice of an existing
+slice can be obtained via an integer range</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let v = [true; 10];
+let w = &amp;v[5..9];
+<span class="boring">}
+</span></code></pre></pre>
+<p>Given some source slice named <code>v</code>, then the following table lists the syntax for
+getting sub-slices</p>
+<table><thead><tr><th>Reference syntax</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>&amp;v[A..B]</code></td><td>A sub-slice starting from index <code>A</code> (inclusive) and ends at index <code>B</code> (exclusive).</td></tr>
+<tr><td><code>&amp;v[A..]</code></td><td>A sub-slice starting at index <code>A</code>.</td></tr>
+<tr><td><code>&amp;v[..B]</code></td><td>A sub-slice ending at index <code>B</code>.</td></tr>
+</tbody></table>
+<p>Note that indices are checked for out-of-bounds and a panic will be produced
+upon illegal index access to prevent issues such as illegal memory access or
+leaking possibly sensitive information in memory (e.g. heartbleed).</p>
+<h2><a class="header" href="#strings" id="strings">Strings</a></h2>
+<p>Rust, like C++, has two string types:</p>
+<ol>
+<li>Immutable string: <code>&amp;str</code>.</li>
+<li>Mutable, growable string: <code>String</code>.</li>
+</ol>
+<h3><a class="header" href="#string-literals" id="string-literals">String Literals</a></h3>
+<p>Strings are delimited with double quotes <code>&quot;</code>, and share backslash sequences with
+<code>char</code> literals (with the difference that single quotes do not need backslashes
+but double quotes do need escaping).</p>
+<p>A string literal may span multiple lines. The newline character is included
+provided that no backslash <code>\</code> ends the line.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let str_1 = &quot;hello
+	world&quot;;
+let str_2 = &quot;no \
+	newline&quot;
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#raw-string-literals" id="raw-string-literals">Raw String Literals</a></h3>
+<p>For convenience, Rust allows <em>raw string literals</em> by prepending the modifier
+<code>r</code> before the string literal.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let raw_string = r&quot;C:\system32\folder&quot;;
+let regex_pattern = Regex::new(r&quot;\d+&quot;);
+<span class="boring">}
+</span></code></pre></pre>
+<p>If double quotes need to be contained within, a longer version for raw string
+literal is supported to remedy the problem of no escape characters being
+recognized:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let raw_string_v2 = r###&quot;
+	println!(&quot;hello world!&quot;);	
+&quot;###;
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#byte-strings" id="byte-strings">Byte Strings</a></h3>
+<p>For efficiency reasons, Rust also supports <em>byte string literals</em>. A <em>byte
+string</em> is a slice of <code>u8</code> values instead of 4-byte <code>char</code> values.</p>
+<p>A byte string literal is created by prepending <code>b</code> before the starting double
+quote <code>&quot;</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let byte_str = b&quot;HELLO&quot;;
+<span class="boring">}
+</span></code></pre></pre>
+<p>Byte strings can only contain ASCII characters because of the size limit of 1
+byte (escape sequences with <code>\xAA</code> is supported still).</p>
+<h3><a class="header" href="#string-and-memory" id="string-and-memory">String and Memory</a></h3>
+<p>Rust strings are stored as sequence of UTF-8 characters by default, but they are
+<em>not</em> stored as array of <code>char</code>s because UTF-8 is a <em>variable-width</em> encoding.
+Some characters may take up only 1 byte, while others can take up multiple
+bytes.</p>
+<ul>
+<li>
+<p>A <code>String</code> is an <em>owned</em> data type. It represents a resizable buffer holding
+UTF-8 content, and is allocated on the heap. Under the hood, <code>String</code> is an
+alias for <code>Vec&lt;u8&gt;</code> vector but implemented to check that its content is a
+valid UTF-8 character sequence.</p>
+</li>
+<li>
+<p>A <code>&amp;str</code> string slice is a reference to some part of a UTF-8. It is borrows
+some string owned by someone else. Similar to vector or array slices, <code>&amp;str</code>
+is a fat pointer with both the pointer to starting character as well as length
+of string container. It is basically a <code>&amp;[u8]</code> slice that is promised to hold
+well-formed UTF-8.</p>
+</li>
+<li>
+<p>A <em>string literal</em> is preallocated and usually stored in read-only <code>.data</code>
+segment within the compiled binary.</p>
+<ul>
+<li>
+<p>Note that one may have to explicitly annotate the string literal with
+<code>'static</code> lifetime:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let compile_time_constant_str: &amp;'static str = &quot;abc&quot;;
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+</ul>
+</li>
+</ul>
+<h3><a class="header" href="#the-string-type" id="the-string-type">The <code>String</code> Type</a></h3>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/str/index.html">std::str</a>.</p>
+</blockquote>
+<ul>
+<li><code>&amp;str</code> is similar to <code>&amp;[T]</code>;</li>
+<li><code>String</code> is similar to <code>Vec&lt;T&gt;</code>.</li>
+</ul>
+<table><thead><tr><th>Behaviour</th><th><code>Vec&lt;T&gt;</code></th><th><code>String</code></th></tr></thead><tbody>
+<tr><td>Auto buffer free</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Resizable</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>::new()</code> and <code>::with_capacity()</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>.reserve()</code> and <code>.capacity()</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>.push()</code> and <code>.pop()</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Range syntax <code>v[start..end]</code></td><td>Yes (<code>-&gt; &amp;[T]</code>)</td><td>Yes (<code>-&gt; &amp;str</code>)</td></tr>
+<tr><td>Auto conversion</td><td><code>&amp;Vec&lt;T&gt;</code> to <code>&amp;[T]</code></td><td><code>&amp;String</code> to <code>&amp;str</code></td></tr>
+<tr><td>Inherites methods</td><td>From <code>&amp;[T]</code></td><td>From <code>&amp;str</code></td></tr>
+</tbody></table>
+<h4><a class="header" href="#creation-methods" id="creation-methods">Creation Methods</a></h4>
+<ul>
+<li>The <code>.to_string()</code> method converting from a string slice <code>&amp;str</code> to a <code>String</code>.</li>
+<li>The <code>format!()</code> macro.</li>
+<li>The <code>.concat()</code> and <code>.join(separator)</code> methods to build a new <code>String</code> from
+existing strings or string slices.</li>
+</ul>
+<h4><a class="header" href="#usage" id="usage">Usage</a></h4>
+<ul>
+<li>Equality is supported by <code>==</code> and <code>!=</code> operators.</li>
+<li>Case conversion:
+<ul>
+<li><code>.to_lowercase()</code></li>
+<li><code>.to_uppercase()</code></li>
+</ul>
+</li>
+<li>Substring contains check <code>.contains(substr)</code>.</li>
+<li>Replacing: <code>.replace(regex, replacement)</code>.</li>
+<li>Trimming whitespace: <code>.trim()</code>.</li>
+<li>Splitting by separator: <code>.split(pattern)</code>.</li>
+<li>Starts with: <code>.starts_with()</code>.</li>
+<li>Ends with: <code>.ends_with()</code>.</li>
+</ul>
+<p>And more methods.</p>
+<h3><a class="header" href="#alternative-string-types" id="alternative-string-types">Alternative String Types</a></h3>
+<p>Sometimes <code>String</code>s are not necessarily valid Unicode, usually for interoperate
+reasons.</p>
+<table><thead><tr><th>Usage</th><th>Suitable Data Type</th><th>Documentation and Resources</th></tr></thead><tbody>
+<tr><td>Unicode text</td><td><code>String</code>, <code>&amp;str</code></td><td><a href="https://doc.rust-lang.org/std/str/index.html">std::str</a></td></tr>
+<tr><td>Filenames</td><td><code>std::path::PathBuf</code>, <code>&amp;Path</code></td><td><a href="https://doc.rust-lang.org/std/path/index.html">std::path</a></td></tr>
+<tr><td>Binary data</td><td><code>Vec&lt;u8&gt;</code>, <code>&amp;[u8]</code></td><td><a href="https://doc.rust-lang.org/std/vec/index.html">std::vec</a>, <a href="https://doc.rust-lang.org/std/primitive.u8.html">u8</a></td></tr>
+<tr><td>Environment variables, CLI arguments from the OS</td><td><code>OsString</code>, <code>&amp;OsStr</code></td><td><a href="https://doc.rust-lang.org/std/ffi/struct.OsString.html">std::ffi::OsString</a></td></tr>
+<tr><td>C libraries, null-terminated strings</td><td><code>std::ffi::CString</code>, <code>&amp;CStr</code></td><td><a href="https://doc.rust-lang.org/std/ffi/struct.CString.html">std::ffi::CString</a></td></tr>
+</tbody></table>
 
                     </main>
 
