@@ -142,6 +142,14 @@ Rust. This is the case for the careful use of `unsafe` Rust.
 
 For more flexibility, Rust also incorporates the concepts of:
 
+> Reference: [Rustnomicon | Ownership and moves](https://doc.rust-lang.org/rust-by-example/scope/move.html)
+
+> Reference: [std::rc](https://doc.rust-lang.org/std/rc/index.html)
+
+> Reference: [std::sync::Arc](https://doc.rust-lang.org/std/sync/struct.Arc.html)
+
+> Reference: [Rustnomicon | Lifetimes](https://doc.rust-lang.org/nomicon/lifetimes.html)
+
 - **Moves**: it is possible to move values from one owner to another owner,
   allowing the programmer to build, rearrange and teardown the ownership tree.
 - **Reference-counted Pointers**:
