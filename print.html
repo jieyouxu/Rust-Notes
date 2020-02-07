@@ -1960,6 +1960,186 @@ multiple owners, but with their own restrictions for safety.</li>
 <li><strong>Borrowing</strong>: the programmer can <em>borrow</em> a reference to an owned value;
 <em>references</em> are non-owning pointers with limited lifetimes.</li>
 </ul>
+<h1><a class="header" href="#moves" id="moves">Moves</a></h1>
+<p>For more flexibility, Rust also provides the ability to <strong>move</strong> values.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut s = &quot;Hello&quot;.to_string();
+s = &quot;World&quot;.to_string(); 			// value &quot;Hello&quot; dropped
+<span class="boring">}
+</span></code></pre></pre>
+<p>When <code>s</code> is reassigned to <code>&quot;World&quot;</code>, the prior value <code>&quot;Hello&quot;</code> is dropped.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut s = &quot;Hello&quot;.to_string();
+let t = s;
+s = &quot;World&quot;.to_string();
+<span class="boring">}
+</span></code></pre></pre>
+<p>Note that in this example, because <code>t</code> assumes ownership of <code>&quot;Hello&quot;</code>, no value
+is dropped since <code>s</code> becomes uninitialized at the time of reassignment of
+<code>&quot;World&quot;</code>.</p>
+<ul>
+<li>Passing arguments to functions <em>moves</em> ownership from the caller to the called
+function's parameters.</li>
+<li>Returning value(s) from a function movies ownership back to the caller.</li>
+</ul>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct User {
+	id: u64,
+	name: String,
+}
+
+let mut users: Vec&lt;User&gt; = Vec::new();
+
+users.push(
+	User {
+		id: 1,
+		name: &quot;LOL&quot;.to_string(),
+	}
+);
+<span class="boring">}
+</span></code></pre></pre>
+<ul>
+<li>Invoking <code>Vec::new()</code> allocates a new vector on the heap, and returns the
+ownership of the vector itself to the variable <code>users</code>.</li>
+<li>The <code>name</code> field of the constructed <code>User</code> is initialized with the return
+value from <code>to_string()</code>, allowing the struct to assume ownership of the
+<code>String</code>.</li>
+<li>The <code>User</code> struct is passed to the vector's <code>push</code> method which takes
+ownership and <em>moves</em> the struct on to the end of the vector. The vector
+becomes the owner of the new <code>User</code> and by transitivity owns the <code>name</code>
+<code>String</code>.</li>
+</ul>
+<p>Such <em>moves</em> apply to the <strong>value proper</strong> instead of the allocated heap memory.
+For contiguous memory types such as vectors and strings, the <strong>value proper</strong> is
+a three-word header, and the allocated heap memory remains unchanged. The Rust
+compiler is also able to perform some optimizations regarding moves to mitigate
+its impacts.</p>
+<h2><a class="header" href="#moves-and-control-flow" id="moves-and-control-flow">Moves and Control Flow</a></h2>
+<p>If a variable has its owned value moved away but never given a new value since,
+then such value is considered <em>uninitialized</em> and will be rejected by the
+compiler.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let s = &quot;hello&quot;.to_string();
+let t = s;					// &quot;hello&quot; now owned by `t`
+println!(&quot;{}&quot;, s); 			// ERROR: `s` now uninitialized
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#moves-and-indices" id="moves-and-indices">Moves and Indices</a></h2>
+<p>Rust may prevent the programmer from trying to move a value out from an arbitary
+index out of an array because of performance constraints - it may be expensive
+to track ownership changes with large vectors.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut v = Vec::new();
+for i in 1..6 {
+	v.push(i.to_string());
+}
+<span class="boring">}
+</span></code></pre></pre>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html">std::vec::Vec</a></p>
+</blockquote>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/mem/fn.replace.html">std::mem::replace</a></p>
+</blockquote>
+<p>To move values out without violating the borrow-checker, we can:</p>
+<ol>
+<li>
+<p>Pop a value off from the end of the vector:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let last = v.pop().unwrap();
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+<li>
+<p>Move a value out of the of the array and replace with last element:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mid = v.swap_remove(1);
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+<li>
+<p>Replace another value in-replace for the target value we're taking out:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let target = std::mem::replace(&amp;mut v[2], &quot;swapped&quot;.to_string());
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+</ol>
+<p>Each of these methods perform moves but leaves the vector intact (each
+consecutive field is properly initialized), even though the vector may become
+smaller.</p>
+<h2><a class="header" href="#collection-types-iterators-and-moves" id="collection-types-iterators-and-moves">Collection Types, Iterators and Moves</a></h2>
+<p>Collection types such as <code>Vec&lt;T&gt;</code> also usually offer iterators for consumption
+of all elements.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let values = vec![&quot;aaa&quot;, &quot;bbb&quot;, &quot;ccc&quot;];
+
+for mut val in values {
+	val.push('!');
+	println!(&quot;{}&quot;, val);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<ul>
+<li>When the vector <code>values</code> is passed to the <code>for</code> loop, the ownership of the
+vector is <em>moved</em> out of <code>values</code> making <code>values</code> uninitialized, with the
+<code>for</code> loop internally assuming ownership of the <code>values</code> vector.</li>
+<li>At each iteration, the <code>for</code> loop moves another element to <code>val</code>.</li>
+</ul>
+<h2><a class="header" href="#moves-and-optiont" id="moves-and-optiont">Moves and <code>Option&lt;T&gt;</code></a></h2>
+<p>If it is absolutely necessary for one to try to move a value out of an owner
+which cannot be tracked by the compiler, the owner's type may be changed into
+something that can represent an optional value (e.g. <code>Option&lt;T&gt;</code>).</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct User {
+	id: u64,
+	name: Option&lt;String&gt;,
+}
+
+let mut users = Vec::new();
+users.push(User { id: 1, name: Some(&quot;hello&quot;.to_string()) });
+
+// CANNOT do:
+// let first_name = users[0].name;
+// because Rust cannot &quot;move out of indexed content&quot;.
+
+// Bypass by substituting in a placeholder value which does not invalidate the
+// ownership requirement.
+let first_name = std::mem::replace(&amp;mut users[0].name, None);
+<span class="boring">}
+</span></code></pre></pre>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/mem/fn.take.html">std::mem::take</a></p>
+</blockquote>
+<p>Rust provides a convenience method for this pattern <code>.take()</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let first_name = users[0].name.take();
+<span class="boring">}
+</span></code></pre></pre>
+<p>Here, <code>std::mem::take()</code> simply moves the target value out and substitutes the
+default value for the type <code>T</code> in-place.</p>
 
                     </main>
 
