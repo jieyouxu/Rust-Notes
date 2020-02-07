@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -1795,6 +1795,57 @@ reasons.</p>
 <tr><td>Environment variables, CLI arguments from the OS</td><td><code>OsString</code>, <code>&amp;OsStr</code></td><td><a href="https://doc.rust-lang.org/std/ffi/struct.OsString.html">std::ffi::OsString</a></td></tr>
 <tr><td>C libraries, null-terminated strings</td><td><code>std::ffi::CString</code>, <code>&amp;CStr</code></td><td><a href="https://doc.rust-lang.org/std/ffi/struct.CString.html">std::ffi::CString</a></td></tr>
 </tbody></table>
+<h1><a class="header" href="#ownership-and-lifetimes" id="ownership-and-lifetimes">Ownership and Lifetimes</a></h1>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/nomicon/ownership.html">Rustnomicon | Ownership and Lifetimes</a></p>
+</blockquote>
+<p>As a systems programming languages, Rust gives the control for memory management
+to the programming.</p>
+<ul>
+<li>
+<p>The <strong>lifetimes</strong> (that is, the duration for which the memory pointed to by
+the reference is valid) of the variables is determined by the programmer.
+Through carefully designed <strong>ownership</strong>, <strong>borrowing</strong> and <strong>scoping rules</strong>,
+Rust can automatically free memory and other resources when references to such
+resources are no longer valid. This is like the concept of <em>resource
+acquisition is initialization</em> (RAII) in C++.</p>
+</li>
+<li>
+<p>Through the same <strong>ownership</strong>, <strong>borrowing</strong> and <strong>scoping rules</strong>, Rust can
+check that no memory bugs such as <em>dangling pointers</em>, <em>double free</em> and data
+races can occur at compile-time (for <em>safe</em> Rust).</p>
+</li>
+</ul>
+<h2><a class="header" href="#memory-management" id="memory-management">Memory Management</a></h2>
+<p>Memory management is handled differently by different programming languages.</p>
+<ul>
+<li>
+<p>C/C++ satisfies memory management control by giving all control to the
+programmer. However, safetyness of such memory operations are not guaranteed
+and mistakes such as <em>double free</em>, <em>dangling pointers</em> and the likes are easy
+to produce and difficult to get correct.</p>
+</li>
+<li>
+<p>To prevent such memory bugs, some programming languages like Java use Garbage
+Collection (GC) to automatically allocate and free memory. The trade-off is
+then the programmer has no explicit control over memory, and GC has overheads
+as well and might not be suitable for very resource-intensive embedded
+systems.</p>
+</li>
+</ul>
+<p>The experiences from these languages reveal a potential trade-off between
+control over memory <em>versus</em> memory safetyness. But Rust uses its <strong>ownership</strong>,
+<strong>borrowing</strong> and <strong>scoping rules</strong> to maximize the utility in both aspects.</p>
+<p>Rust does this by carefully imposing <em>restrictions</em> over which programs are
+accepted as &quot;correct&quot; by the compiler.</p>
+<h2><a class="header" href="#an-opt-in-by-default-opt-out-by-exception-safety-check" id="an-opt-in-by-default-opt-out-by-exception-safety-check">An Opt-in-By-Default, Opt-out-By-Exception Safety Check</a></h2>
+<p>When such safety features are not sufficient in expressiveness, Rust also allows
+the programming to explicitly opt-out of the borrow-checker by annotating unsafe
+Rust code with <code>unsafe {}</code> blocks. In this case, the responsibility of checking
+memory safety and coherence is delegated to the programmer. The idea is that
+even if a small part of the program must be <code>unsafe</code>, we can design a <em>safety
+wrapper</em> around the <code>unsafe</code> block and only a small portion of our program needs
+to be checked for the culprits of segfaults and the likes.</p>
 
                     </main>
 
