@@ -11,4 +11,3 @@
 - [Basic Types](content/basic-types/index.md)
 - [Ownership](content/ownership/index.md)
 	+ [Moves](content/ownership/moves.md)
-
