@@ -189,7 +189,269 @@ performed within `unsafe {}` blocks, to opt-out of the borrow-checker. It is up
 to the programmer, then, to ensure memory safety and coherence within `unsafe`
 blocks.
 
-### Arrays, Vectors and Slices
+## Arrays, Vectors and Slices
 
 Rust has three basic types for representing a contiguous sequence of values in
+memory:
+
+1. **Fixed-size Array**: `[T; N]`
+
+	Represents an an array of `N` values of type `T`. The size of an array is
+	determined at compile-time and is enforced as part of the type; immutable.
+
+2. **Vector**: `Vec<T>`
+
+	Represents a dynamically allocated sequence of values of type `T`. Elements
+	of a vector lives on the heap to allow resizing.
+
+3. **Shared Slices**: `&[T]` and `&mut [T]`
+
+	- *Shared slice*: `&[T]`. A reference to a sequence of elements which is
+	  part of some container such as an array or vector. Can be a sub-range of
+	  the container. Immutable reference.
+
+	- *Mutable slice*: `&mut [T]`. A reference to a sequence of element of some
+	  container, can be used to modify arguments but cannot be shared.
+
+The length can be obtained for each of these container types via the `len()`
+function defined for these types. Accessing an element at index `i` can be done
+via `v[i]` where `v` is the name of the container. Out-of-bounds will produce a
+panic, and indicies into such container types is required to be of type `usize`.
+
+### Arrays
+
+#### Array Literals
+
+Array literals can be declared with the syntax
+
+```
+name: [T; N] = [<element>, ...];
+```
+
+With `T` being the type and `N` the number of elements.
+
+```rust
+let elements: [u32; 6] = [1, 2, 3, 4, 5, 6];
+let strings = ["a", "b", "c"];
+```
+
+Additionally, it is possible to initialize the entire array
+
+```rust
+let elements = [true; 100];
+```
+
+### Vectors
+
+Each vector `Vec<T>` is a resizable array allocated on the heap, containing
+elements of type `T`.
+
+The `vec!` macro may be used to create a vector, similar in syntax to arrays.
+
+```rust
+let mut v = vec![1, 2, 3];
+```
+
+Again, it is possible to repeat some value for a number of times
+
+```rust
+let mut v = vec![true; 100];
+```
+
+The `vec!` macro is a syntax sugar for creating a new vector via `Vector::new`
+and pushing the desired elements on to it via `v.push()`.
+
+It is also possible to build a vector from an iterator, such as
+
+```rust
+let v: Vec<i32> = (0..5).collect();
+```
+
+#### Initializing with Capacity
+
+To resize the internal array representation within a `Vec<T>`, Rust will need to
+create a larger new array and copy contents from the old array over. This is
+both space and time costly, so the programmer should take care to specify a
+suitable initial capacity whenever possible, by using the alternative
+constructor `Vec::with_capacity`.
+
+### Slices
+
+A *slice* `[T]` (with no length specified) represents a *region* of an array or
+vector, and is always passed by reference since the length is arbitrary.
+
+A reference to some slice is a *fat pointer*, containing:
+
+| Word | Value                                     |
+| ---- | ----------------------------------------- |
+| `0`  | Pointer to element `i = 0` of the slice   |
+| `1`  | Number of elements contained in the slice |
+
+Rust is able to automatically convert between `&Vec<T>` and `&[T; N]` slice
+references given the sizes are compatible.
+
+Compared to normal references, a slice reference is a *non-owning* pointer to
+multiple values (technically, to the first element of the part of the container
+with multiple elements).
+
+#### Sub-slicing
+
+A reference to a slice of an array or vector, or a sub-slice of an existing
+slice can be obtained via an integer range
+
+```rust
+let v = [true; 10];
+let w = &v[5..9];
+```
+
+Given some source slice named `v`, then the following table lists the syntax for
+getting sub-slices
+
+| Reference syntax | Meaning                                                                            |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| `&v[A..B]`       | A sub-slice starting from index `A` (inclusive) and ends at index `B` (exclusive). |
+| `&v[A..]`        | A sub-slice starting at index `A`.                                                 |
+| `&v[..B]`        | A sub-slice ending at index `B`.                                                   |
+
+Note that indices are checked for out-of-bounds and a panic will be produced
+upon illegal index access to prevent issues such as illegal memory access or
+leaking possibly sensitive information in memory (e.g. heartbleed).
+
+## Strings
+
+Rust, like C++, has two string types:
+
+1. Immutable string: `&str`.
+2. Mutable, growable string: `String`.
+
+### String Literals
+
+Strings are delimited with double quotes `"`, and share backslash sequences with
+`char` literals (with the difference that single quotes do not need backslashes
+but double quotes do need escaping).
+
+A string literal may span multiple lines. The newline character is included
+provided that no backslash `\` ends the line.
+
+```rust
+let str_1 = "hello
+	world";
+let str_2 = "no \
+	newline"
+```
+
+### Raw String Literals
+
+For convenience, Rust allows *raw string literals* by prepending the modifier
+`r` before the string literal.
+
+```rust
+let raw_string = r"C:\system32\folder";
+let regex_pattern = Regex::new(r"\d+");
+```
+
+If double quotes need to be contained within, a longer version for raw string
+literal is supported to remedy the problem of no escape characters being
+recognized:
+
+```rust
+let raw_string_v2 = r###"
+	println!("hello world!");	
+"###;
+```
+
+### Byte Strings
+
+For efficiency reasons, Rust also supports *byte string literals*. A *byte
+string* is a slice of `u8` values instead of 4-byte `char` values.
+
+A byte string literal is created by prepending `b` before the starting double
+quote `"`.
+
+```rust
+let byte_str = b"HELLO";
+```
+
+Byte strings can only contain ASCII characters because of the size limit of 1
+byte (escape sequences with `\xAA` is supported still).
+
+### String and Memory
+
+Rust strings are stored as sequence of UTF-8 characters by default, but they are
+*not* stored as array of `char`s because UTF-8 is a *variable-width* encoding.
+Some characters may take up only 1 byte, while others can take up multiple
+bytes.
+
+- A `String` is an *owned* data type. It represents a resizable buffer holding
+  UTF-8 content, and is allocated on the heap. Under the hood, `String` is an
+  alias for `Vec<u8>` vector but implemented to check that its content is a
+  valid UTF-8 character sequence.
+
+- A `&str` string slice is a reference to some part of a UTF-8. It is borrows
+  some string owned by someone else. Similar to vector or array slices, `&str`
+  is a fat pointer with both the pointer to starting character as well as length
+  of string container. It is basically a `&[u8]` slice that is promised to hold
+  well-formed UTF-8.
+
+- A *string literal* is preallocated and usually stored in read-only `.data`
+  segment within the compiled binary.
+	+ Note that one may have to explicitly annotate the string literal with
+	  `'static` lifetime:
+
+	  ```rust
+	  let compile_time_constant_str: &'static str = "abc";
+	  ```
+
+### The `String` Type 
+
+> Reference: [std::str](https://doc.rust-lang.org/std/str/index.html).
+
+- `&str` is similar to `&[T]`;
+- `String` is similar to `Vec<T>`.
+
+| Behaviour                         | `Vec<T>`            | `String`            |
+| --------------------------------- | ------------------- | ------------------- |
+| Auto buffer free                  | Yes                 | Yes                 |
+| Resizable                         | Yes                 | Yes                 |
+| `::new()` and `::with_capacity()` | Yes                 | Yes                 |
+| `.reserve()` and `.capacity()`    | Yes                 | Yes                 |
+| `.push()` and `.pop()`            | Yes                 | Yes                 |
+| Range syntax `v[start..end]`      | Yes (`-> &[T]`)     | Yes (`-> &str`)     |
+| Auto conversion                   | `&Vec<T>` to `&[T]` | `&String` to `&str` |
+| Inherites methods                 | From `&[T]`         | From `&str`         |
+
+#### Creation Methods
+
+- The `.to_string()` method converting from a string slice `&str` to a `String`.
+- The `format!()` macro.
+- The `.concat()` and `.join(separator)` methods to build a new `String` from
+  existing strings or string slices.
+
+#### Usage
+
+- Equality is supported by `==` and `!=` operators.
+- Case conversion:
+	+ `.to_lowercase()`
+	+ `.to_uppercase()`
+- Substring contains check `.contains(substr)`.
+- Replacing: `.replace(regex, replacement)`.
+- Trimming whitespace: `.trim()`.
+- Splitting by separator: `.split(pattern)`.
+- Starts with: `.starts_with()`.
+- Ends with: `.ends_with()`.
+
+And more methods.
+
+### Alternative String Types
+
+Sometimes `String`s are not necessarily valid Unicode, usually for interoperate
+reasons.
+
+| Usage                                            | Suitable Data Type            | Documentation and Resources                                                                                     |
+|--------------------------------------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| Unicode text                                     | `String`, `&str`              | [std::str](https://doc.rust-lang.org/std/str/index.html)                                                        |
+| Filenames                                        | `std::path::PathBuf`, `&Path` | [std::path](https://doc.rust-lang.org/std/path/index.html)                                                     |
+| Binary data                                      | `Vec<u8>`, `&[u8]`            | [std::vec](https://doc.rust-lang.org/std/vec/index.html), [u8](https://doc.rust-lang.org/std/primitive.u8.html) |
+| Environment variables, CLI arguments from the OS | `OsString`, `&OsStr`          | [std::ffi::OsString](https://doc.rust-lang.org/std/ffi/struct.OsString.html)                                    |
+| C libraries, null-terminated strings             | `std::ffi::CString`, `&CStr`  | [std::ffi::CString](https://doc.rust-lang.org/std/ffi/struct.CString.html)                                      | 
 
