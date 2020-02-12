@@ -1,0 +1,489 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>References - Rust Notes</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="../../content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="../../content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="../../content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="../../content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="../../content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="../../content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="../../content/ownership/references.html" class="active"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust Notes</h1>
+
+                        <div class="right-buttons">
+                            <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#references" id="references">References</a></h1>
+<p>Rust provides <strong>references</strong>. which are <em>non-owning</em> pointers.</p>
+<ul>
+<li>References do not affect the lifetimes of their referents.</li>
+<li>To prevent the problem of <em>dangling references</em>, references cannot outlive
+their referents.</li>
+<li>The action of creating references is also termed <strong>borrowing</strong> - when the
+borrowed value is no longer used, it must be returned to its original owner.</li>
+</ul>
+<p>References allow the cases where you don't actually need the ownership to a
+value, but merely needs access to it.</p>
+<p>References are <em>never null</em> – so you don't encounter the infamous
+<code>NullPointerException</code> type of situations. No concept such as <code>nullptr</code> or
+<code>NULL</code> exist by default and variables must be intialized before used, and
+integers won't be implicitly coerced to references.</p>
+<p>If some value needs to be either a valid reference or absent, use <code>Option&lt;&amp;T&gt;</code>
+to encode the possibility of absent with <code>None</code> as the &quot;null&quot; pointer.</p>
+<h2><a class="header" href="#kinds-of-references" id="kinds-of-references">Kinds of References</a></h2>
+<p>Two kinds of references exist in Rust:</p>
+<ol>
+<li>
+<p><strong>Shared reference</strong>.</p>
+<ul>
+<li>
+<p>A <em>shared reference</em> in Rust allows the user to read the referent but
+<em>not</em> modify its referent (i.e. <em>immutable reference</em>). In each scope (
+and by transitivity nested scopes contained within that scope), there may
+be many shared references to some value due to immutability.</p>
+</li>
+<li>
+<p>A <em>shared reference</em> is taken by the ampersand operator <code>&amp;e</code> on some
+expression <code>e</code>. Should the expression <code>e</code> be of type <code>T</code>, i.e. <code>e: T</code>, 
+then its shared reference will have type <code>&amp;T</code>.</p>
+</li>
+<li>
+<p>Shared references automatically are <code>Copy</code>, allowing the programmer to
+easily create copies of the shared references which will point to the same
+target value.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Mutable reference</strong>.</p>
+<ul>
+<li>
+<p>A <em>mutable reference</em> allows both read and modify access to its referent.
+To ensure that no data races occur, a <em>mutable reference</em> must be mutually
+exclusive to any other references to the referent.</p>
+</li>
+<li>
+<p>A <em>mutable reference</em> is taken by the expression <code>&amp;mut e</code> for some
+expression <code>e</code>, and if <code>e: T</code>, then the mutable reference has type
+<code>&amp;mut T</code>.</p>
+</li>
+<li>
+<p>To enforce on the mutual exclusitivity, mutable references do <em>not</em>
+implement the <code>Copy</code> trait.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>The mutual exclusitivity between either many <em>shared references</em> or a single
+<em>mutable reference</em> is the attempt to capture and enforce the rule of <em>multiple
+readers or single writer, but not both</em> via the type system, checked at compile
+time.</p>
+<p>The mutual exclusitivity rule is transitively enforced to the borrowed value's
+owner.</p>
+<ul>
+<li>If <em>shared references</em> exist for some value, then the owner of the value
+cannot modify it as well to also prevent data races.</li>
+<li>If a <em>mutable reference</em> exists for some value, then the owner cannot be used
+until the mutable reference is dropped.</li>
+</ul>
+<p>The core idea is to quarantine reading from writing in separate isolated turns
+to ensure memory safety to prevent data races.</p>
+<h2><a class="header" href="#terminology" id="terminology">Terminology</a></h2>
+<p>When an argument (value) is passed to a function via ownership moving or by
+copying, then this is <strong>pass-by-value</strong>.</p>
+<p>If a reference to the value is passed as the argument to a function, then this
+is <strong>pass-by-reference</strong>.</p>
+<h2><a class="header" href="#references-are-values" id="references-are-values">References Are Values</a></h2>
+<p>Rust's references are similar to C++ references in that they are simply
+addresses at the underlying implementation level.</p>
+<p>To dereference a reference <code>r</code>, use the asterisk operator <code>*r</code>.</p>
+<p>To reduce boilerplate for derferencing referencies, Rust's dot operator <code>.</code>
+implicitly dereferences the left-hand side operand if the operand is a
+reference. This behaviour is similar to C's arrow operator <code>a-&gt;b</code> where <code>a</code> is a
+pointer.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct A { x: bool };
+let e = A { x: true };
+let e_ref = &amp;e;
+println!(&quot;e.x = {}&quot;, e_ref.x);
+println!(&quot;e.x = {}&quot;, (*e_ref).x); // equivalent in semantics
+<span class="boring">}
+</span></code></pre></pre>
+<p>The dot <code>.</code> operator can also implicitly borrow a reference to its
+left-hand-side operand for a method call if needed.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut v = vec![1, 2, 3];
+v.sort();
+(&amp;mut v).sort(); // equivalent in semantics
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#assigning-to-references" id="assigning-to-references">Assigning to References</a></h3>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let x = 1;
+let y = 2;
+
+let mut r = &amp;x;
+r = &amp;y;
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#references-to-references" id="references-to-references">References to References</a></h3>
+<p>Legal, but adds an additional layer of indrection.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let x: i32 = 1;
+let r: &amp;i32 = &amp;x;
+let rr: &amp;&amp;i32 = &amp;r;
+let rrr: &amp;&amp;&amp;i32 = &amp;rr;
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#comparing-references" id="comparing-references">Comparing References</a></h3>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/cmp/trait.Eq.html">std::cmp:Eq</a></p>
+</blockquote>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/cmp/trait.PartialOrd.html">std::cmp::PartialOrd</a></p>
+</blockquote>
+<p>Rust's comparison operators, by default, always tries to implicitly dereference
+references on both sides to compare the original values they point to, for any
+number of layers of references.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let x = 1;
+let y = 1;
+
+let rx = &amp;x;
+let ry = &amp;y;
+
+let rrx = &amp;rx;
+let rry = &amp;ry;
+
+assert!(rrx == rry);
+assert!(rx == ry);
+assert!(x == y);
+<span class="boring">}
+</span></code></pre></pre>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/ptr/fn.eq.html">std::ptr::eq</a></p>
+</blockquote>
+<p>If <em>pointer equality</em> or <em>address equality</em> is desired, then
+<code>std::ptr::eq(p1, p2)</code> should be used instead.</p>
+<h2><a class="header" href="#special-references" id="special-references">Special References</a></h2>
+<p>Previous references are single-byte simple addresses.</p>
+<p>Rust also has two types of <em>fat pointers</em> (<em>fat references</em>) which include
+additional metadata information for their referents. </p>
+<ol>
+<li>
+<p><strong>Slice reference</strong>. A slice reference is a two-byte fat pointer:</p>
+<table><thead><tr><th>Byte index</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>0</td><td>Starting address</td></tr>
+<tr><td>1</td><td>Length of slice</td></tr>
+</tbody></table>
+</li>
+<li>
+<p><strong>Trait object</strong>. A trait object is a reference to a value which implements
+some trait:</p>
+<table><thead><tr><th>Byte index</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>0</td><td>Address</td></tr>
+<tr><td>1</td><td>Trait's implementation for invocation</td></tr>
+</tbody></table>
+</li>
+</ol>
+<h2><a class="header" href="#reference-safety" id="reference-safety">Reference Safety</a></h2>
+<h3><a class="header" href="#local-variable-borrows" id="local-variable-borrows">Local Variable Borrows</a></h3>
+<p>Scope rules are enforced to ensure memory safety.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>{
+	let outer;
+	{
+		let inner = 1;
+		outer = &amp;inner;
+	} // `inner` dropped, outer deinitialized
+	println!(*outer); // ILLEGAL: `outer` is not initialized due to scoping
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Dereferencing <code>outer</code> would be dereferencing a dangling pointer because <code>inner</code>
+is dropped at the end of the inner scope, and so Rust prohibits such construct.</p>
+<p>This is the <strong>lifetime</strong> system which Rust uses to check memory safety. Each
+reference has a <em>lifetime</em> which is constrained to restrict what usages are
+deemed safe.</p>
+<p>A <em>lifetime</em> is some span of the program which a reference is <em>safe</em> to use; it
+may be a lexical scope (e.g. within the current pair of braces), a statement, an
+expression, or tied to the scope of some variable, etc.</p>
+<p>Lifetimes are only compile-time concepts and do not have runtime
+representations so it does not have overhead.</p>
+<p>Such lifetime rules are enforced recursively. For example, if the programmer has
+a reference to a slice containing references, e.g. <code>[&amp;T]</code>, then the slice's
+lifetime must outlive all of its elements' lifetime. The same goes for enums,
+structs, tuples and the likes.</p>
+<h3><a class="header" href="#reference-parameters" id="reference-parameters">Reference Parameters</a></h3>
+<p>Rust's concept of global variable is a <code>static</code> variable, which has equivalent
+lifetime as the running program itself (global in terms of lifetime, but not in
+terms of visibility).</p>
+<ul>
+<li>Static variables <em>must</em> be initialized.</li>
+<li>Mutable static variables are <em>not</em> thread safe, and also face reentrancy
+issues even in single-threaded code. A mutable static can only be used within
+an <code>unsafe</code> block.</li>
+</ul>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>static mut GLOBAL_VAR: &amp;i32; // ILLEGAL: not initialized
+fn f(p: &amp;i32) { GLOBAL_VAR = p; }
+<span class="boring">}
+</span></code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>static mut GLOBAL_VAR: &amp;i32 = &amp;128;
+fn f(p: &amp;i32) { // ILLEGAL: still have lifetime issues
+	unsafe {
+		GLOBAL_VAR = p; // GLOBAL_VAR outlives p!
+	}
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>The code above omits <em>lifetime parameters</em> because Rust can perform <em>lifetime
+ellision</em> in some cases. It can also be explicitly written out:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>static mut GLOBAL_VAR: &amp;i32 = &amp;128;
+fn f&lt;'a&gt;(p: &amp;'a i32) {
+	unsafe {
+		GLOBAL_VAR = p; // GLOBAL_VAR outlives p!
+	}
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Here the <em>lifetime variable</em> <code>'a</code> is taken as the <strong>lifetime parameter</strong> of <code>f</code>.
+As the reference <code>p</code> also has lifetime <code>'a</code>. Because <code>'a</code> is required to be of
+any lifetime, the problem is with the assignment from <code>p</code> to <code>GLOBAL_VAR</code>.</p>
+<p>Because <code>GLOBAL_VAR</code>'s lifetime is that of the program, <code>p</code> may not live
+sufficiently long enough and so this assignment can't be deemed as safe.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>static mut GLOBAL_VAR: &amp;i32 = &amp;128;
+
+fn f(p: &amp;'static i32) {
+	unsafe {
+		GLOBAL_VAR = p;
+	}
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>This is safe because now <code>p</code> has the same lifetime as <code>GLOBAL_VAR</code>, both being
+<code>'static</code>.</p>
+<h3><a class="header" href="#struct-member-reference-lifetime" id="struct-member-reference-lifetime">Struct Member Reference Lifetime</a></h3>
+<p>TODO</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../../content/ownership/shared-ownership.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../../content/ownership/shared-ownership.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
