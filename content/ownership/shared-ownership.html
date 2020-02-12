@@ -207,6 +207,19 @@ a recipe for disaster.</li>
 will lock-up each other's reference count ( &gt; 0 ) and so the values will
 never be freed.</li>
 </ul>
+<p>This will inevitably cause a memory leak – but this requires making older value
+point to a newer value to create a cycle. Usually, since <code>Rc</code> pointers point to
+their content immutably, a cycle cannot be created. But Rust does have
+facilities to allow <em>partial mutability</em> for a immutable value, i.e. <strong>interior
+mutability</strong>. In such cases, with <code>Rc</code> combined with <em>interior mutability</em>,
+memory leaks can be created if not carefully designed and managed.</p>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/rc/struct.Weak.html">std::rc::Weak</a></p>
+</blockquote>
+<p>When such interior mutability is desired, it is possible to break cycles from
+<code>Rc</code> points through <em>weak pointers</em>.</p>
+<p>As such, moves and reference-counted pointers are facilities provided to
+increase the flexibility and expressivenss of the ownership system.</p>
 
                     </main>
 
