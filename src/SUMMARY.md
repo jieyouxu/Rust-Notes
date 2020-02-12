@@ -13,4 +13,5 @@
 	+ [Moves](content/ownership/moves.md)
 	+ [Copy Types](content/ownership/copy.md)
 	+ [Shared Ownership](content/ownership/shared-ownership.md)
+	+ [References](content/ownership/references.md)
 
