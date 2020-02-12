@@ -53,3 +53,18 @@ Trying to manage memory with reference counts come with its own chanllenges:
   will lock-up each other's reference count \( > 0 \) and so the values will
   never be freed.
 
+This will inevitably cause a memory leak – but this requires making older value
+point to a newer value to create a cycle. Usually, since `Rc` pointers point to
+their content immutably, a cycle cannot be created. But Rust does have
+facilities to allow *partial mutability* for a immutable value, i.e. **interior
+mutability**. In such cases, with `Rc` combined with *interior mutability*,
+memory leaks can be created if not carefully designed and managed.
+
+> Reference: [std::rc::Weak](https://doc.rust-lang.org/std/rc/struct.Weak.html)
+
+When such interior mutability is desired, it is possible to break cycles from
+`Rc` points through *weak pointers*.
+
+As such, moves and reference-counted pointers are facilities provided to
+increase the flexibility and expressivenss of the ownership system.
+
