@@ -14,4 +14,5 @@
 	+ [Copy Types](content/ownership/copy.md)
 	+ [Shared Ownership](content/ownership/shared-ownership.md)
 	+ [References](content/ownership/references.md)
+- [Expressions](content/expressions/index.md)
 
