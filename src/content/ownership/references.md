@@ -272,5 +272,107 @@ This is safe because now `p` has the same lifetime as `GLOBAL_VAR`, both being
 
 ### Struct Member Reference Lifetime
 
-TODO
+If some `struct` contains reference as members, then safety for those references
+are enforced as well.
+
+If a *reference type* is used inside another type's definition, then the
+reference type's *lifetime* must be explicitly specified:
+
+```rust
+struct S {
+	value: &'static i32,
+}
+```
+
+The `'static` lifetime here limits what `value` can refer to significantly. If
+we want to be more flexible with `value`'s lifetime, we can specify `S` to take
+a *lifetime parameter*.
+
+```rust
+struct S<'a> {
+	value: &'a i32,
+}
+```
+
+This is to say that `S` has a *generic lifetime parameter*. `S` itself has a
+lifetime.
+
+Whenever a new `S` value is created, its lifetime is constrained by its own
+lifetime as well as its generic lifetime parameter `'a`. Then, the lifetime
+parameter `'a` is required to outlive that of the container struct `S`.
+
+If there is another `struct T` which takes an `S` type as member, its lifetime
+parameter cannot be elided. Either an explicit lifetime must be provided,
+like `'static`, or `T` must also take a lifetime parameter.
+
+```rust
+struct T {
+	s: S,  // illegal
+}
+```
+
+```rust
+struct T {
+	s: S<'static>,
+}
+```
+
+```rust
+struct T<'a> {
+	s: <'a>,
+}
+```
+
+These lifetime parameters, when they cannot be elided, also serve as valuable
+documentation.
+
+
+For example, a function such as:
+
+```rust
+fn parse_record<'i>(input: &'i [u8]) -> Record<'i> { ... } 
+```
+
+Indicates that if a `Record` is returned from the function, then it's member
+reference(s) must be pointing to some part or element of the input slice due to
+the lifetime parameter being the same.
+
+## Distinct Lifetime Parameters
+
+If there is some struct such as
+
+```rust
+struct S<'a> {
+	x: &'a i32,
+	y: &'a i32,
+}
+```
+
+But this is problematic if you wish to try to reference to two variables from an
+inner and outer scope, because their lifetimes do not unify to the single `'a`.
+
+Instead, two lifetime variables could be specified:
+
+```rust
+struct S<'a, 'b> {
+	x: &'a i32,
+	y: &'b i32,
+}
+```
+
+Then, they *could* have different lifetimes, but they also could be the same,
+which is more flexible.
+
+The same applies to function signatures, although lifetime parameters could
+potentially complicate the function signature.
+
+```rust
+fn take_first<'a, 'b>(p1: &'a i32, p2: &'b i32) -> &'a i32 { p1 }
+```
+
+### Lifetime Parameter Elision
+
+The Rust compiler performs lifetime parameter elision for most of the trivial
+cases, so the programmer does not need to always explicitly spell out the
+lifetimes.
 
