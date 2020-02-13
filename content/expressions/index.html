@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Basic Concurrency - Rust Notes</title>
+        <title>Expressions - Rust Notes</title>
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -84,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html" class="active"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="../../content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="../../content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="../../content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="../../content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="../../content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="../../content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="../../content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="../../content/expressions/index.html"><strong aria-hidden="true">5.</strong> Expressions</a></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="../../content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="../../content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="../../content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="../../content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="../../content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="../../content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="../../content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="../../content/expressions/index.html" class="active"><strong aria-hidden="true">5.</strong> Expressions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -151,67 +151,48 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#concurrency" id="concurrency">Concurrency</a></h1>
-<p>Rust's type system and the <strong>borrow checker</strong> (<code>borrowck</code>) prevents code which
-contains memory errors from compiling (unless you use <code>unsafe</code>).</p>
-<blockquote>
-<p>Reference: <a href="https://www.slideshare.net/nikomatsakis/rust-concurrency-tutorial-2015-1202">nikomatsakis</a></p>
-</blockquote>
-<blockquote>
-<p>Great talk by Niko Matsakis: <a href="https://www.youtube.com/watch?v=lO1z-7cuRYI">C++Now 2017: Niko Matsakis &quot;Rust: Hack Without Fear!&quot;</a></p>
-</blockquote>
-<blockquote>
-<p>Blog post: <a href="https://blog.rust-lang.org/2015/04/10/Fearless-Concurrency.html">Fearless Concurrency</a></p>
-</blockquote>
-<ul>
-<li>This is the <strong>ownership/borrowing</strong> system + traits:
-<ul>
-<li>Does not need runtime (compared to C++).</li>
-<li>Guaranteed memory safety (no need for garbage collection).</li>
-<li>No data races.</li>
-</ul>
-</li>
-</ul>
-<h2><a class="header" href="#principled-aliasing-and-mutations" id="principled-aliasing-and-mutations">Principled Aliasing and Mutations</a></h2>
-<p>With the ownership and borrowing system in Rust, by utilizing suitable scoping
-rules (<strong>lifetime</strong>s) and the type system, we can have principled aliasing and
-mutations for avoiding problems such as data races and liveness issues.</p>
-<p>The key is to have <em>mutually exclusive</em> <strong>aliasing</strong> versus <strong>mutations</strong> which
-are enforced by Rust's type system.</p>
-<table><thead><tr><th>Type</th><th>Ownership</th><th>Alias Allowed</th><th>Mutation Allowed</th></tr></thead><tbody>
-<tr><td><code>T</code></td><td>Owned</td><td>❌</td><td>✅</td></tr>
-<tr><td><code>&amp;T</code></td><td>Shared reference</td><td>✅</td><td>❌</td></tr>
-<tr><td><code>&amp;mut T</code></td><td>Mutable reference</td><td>❌</td><td>✅</td></tr>
-</tbody></table>
-<h2><a class="header" href="#concurrency-paradigms" id="concurrency-paradigms">Concurrency Paradigms</a></h2>
-<p>Rust does not have &quot;default&quot; concurrency paradigm, instead it supports all of
-them:</p>
-<table><thead><tr><th>Concurrency Paradigm</th><th>Addressed by Ownership</th><th>Addressed by Borrowing</th><th>Notable Usages</th></tr></thead><tbody>
-<tr><td>Fork-join</td><td></td><td>✅</td><td>C</td></tr>
-<tr><td>Message passing</td><td></td><td>✅</td><td>Erlang/Elixir</td></tr>
-<tr><td>Locking</td><td>✅</td><td>✅</td><td>C, Java</td></tr>
-<tr><td>Lock-free</td><td>✅</td><td>✅</td><td>C, Java</td></tr>
-<tr><td>Futures (Async/Await)</td><td>✅</td><td>✅</td><td>JavaScript (node.js)</td></tr>
-</tbody></table>
-<blockquote>
-<p>Great talk by Jon Gjengset on <a href="https://www.youtube.com/watch?v=s19G6n0UjsM&amp;t=1118s">Noria: Lock-free concurrent database</a></p>
-<p>Lock-free, eventually consistent, concurrent multi-value map: <a href="https://github.com/jonhoo/rust-evmap">jonhoo/rust-evmap</a></p>
-</blockquote>
+                        <h1><a class="header" href="#expressions" id="expressions">Expressions</a></h1>
+<p>Rust is primarily an <em>expression language</em>. <code>if</code> and <code>match</code> expressions are
+expressions which evaluate to values instead of statements, unless transformed
+into a statement through a trailing semicolon. This alleviates the need for the
+ternary operator <code>&lt;bool_expr&gt; : &lt;expr_if_true&gt; ? &lt;expr_if_false&gt;</code>.</p>
+<h2><a class="header" href="#blocks-semicolons" id="blocks-semicolons">Blocks, Semicolons</a></h2>
+<p>Blocks in Rust are <em>expressions</em>. A block can contain zero or more statements,
+and an ending expression or statement; conceptually:</p>
+<pre><code class="language-enbf">&lt;block&gt; 	::= &lt;statements&gt;? &lt;expression&gt;     /* ends with expression */
+			|   &lt;statements&gt;? &lt;statement&gt;
+
+&lt;statements&gt; 	::= &lt;statement&gt;
+				|   &lt;statement&gt; &lt;statements&gt;
+
+&lt;statement&gt; 	::= &lt;expression&gt; &quot;;&quot;
+</code></pre>
+<p>Or in a pseudo Abstract Syntax Tree:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>type Stmts = Vec&lt;Stmt&gt;;
+
+enum Block {
+	StatementBlock(Option&lt;Stmts&gt;, Expr),
+	ExpressionBlock(Option&lt;Stmts&gt;, Stmt),
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>If a <code>&lt;block&gt;</code> ends in an <code>&lt;expression&gt;</code>, then the <code>&lt;block&gt;</code> evaluates to the
+value of the <code>&lt;expression&gt;</code>. Otherwise, the statement block variant evaluates to
+<code>()</code> (unit) representing empty value.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="../../content/basics/example-simple-web-server.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../content/ownership/references.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
-                        
-                            <a rel="next" href="../../content/basics/example-mandelbrot-set.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -221,15 +202,11 @@ them:</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a href="../../content/basics/example-simple-web-server.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a href="../../content/ownership/references.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
-                
-                    <a href="../../content/basics/example-mandelbrot-set.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
                 
             </nav>
 

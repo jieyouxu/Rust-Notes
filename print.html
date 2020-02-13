@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="content/expressions/index.html"><strong aria-hidden="true">5.</strong> Expressions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -2623,6 +2623,37 @@ potentially complicate the function signature.</p>
 <p>The Rust compiler performs lifetime parameter elision for most of the trivial
 cases, so the programmer does not need to always explicitly spell out the
 lifetimes.</p>
+<h1><a class="header" href="#expressions" id="expressions">Expressions</a></h1>
+<p>Rust is primarily an <em>expression language</em>. <code>if</code> and <code>match</code> expressions are
+expressions which evaluate to values instead of statements, unless transformed
+into a statement through a trailing semicolon. This alleviates the need for the
+ternary operator <code>&lt;bool_expr&gt; : &lt;expr_if_true&gt; ? &lt;expr_if_false&gt;</code>.</p>
+<h2><a class="header" href="#blocks-semicolons" id="blocks-semicolons">Blocks, Semicolons</a></h2>
+<p>Blocks in Rust are <em>expressions</em>. A block can contain zero or more statements,
+and an ending expression or statement; conceptually:</p>
+<pre><code class="language-enbf">&lt;block&gt; 	::= &lt;statements&gt;? &lt;expression&gt;     /* ends with expression */
+			|   &lt;statements&gt;? &lt;statement&gt;
+
+&lt;statements&gt; 	::= &lt;statement&gt;
+				|   &lt;statement&gt; &lt;statements&gt;
+
+&lt;statement&gt; 	::= &lt;expression&gt; &quot;;&quot;
+</code></pre>
+<p>Or in a pseudo Abstract Syntax Tree:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>type Stmts = Vec&lt;Stmt&gt;;
+
+enum Block {
+	StatementBlock(Option&lt;Stmts&gt;, Expr),
+	ExpressionBlock(Option&lt;Stmts&gt;, Stmt),
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>If a <code>&lt;block&gt;</code> ends in an <code>&lt;expression&gt;</code>, then the <code>&lt;block&gt;</code> evaluates to the
+value of the <code>&lt;expression&gt;</code>. Otherwise, the statement block variant evaluates to
+<code>()</code> (unit) representing empty value.</p>
 
                     </main>
 
