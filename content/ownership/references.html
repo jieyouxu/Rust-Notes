@@ -425,7 +425,110 @@ fn f(p: &amp;'static i32) {
 <p>This is safe because now <code>p</code> has the same lifetime as <code>GLOBAL_VAR</code>, both being
 <code>'static</code>.</p>
 <h3><a class="header" href="#struct-member-reference-lifetime" id="struct-member-reference-lifetime">Struct Member Reference Lifetime</a></h3>
-<p>TODO</p>
+<p>If some <code>struct</code> contains reference as members, then safety for those references
+are enforced as well.</p>
+<p>If a <em>reference type</em> is used inside another type's definition, then the
+reference type's <em>lifetime</em> must be explicitly specified:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct S {
+	value: &amp;'static i32,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>The <code>'static</code> lifetime here limits what <code>value</code> can refer to significantly. If
+we want to be more flexible with <code>value</code>'s lifetime, we can specify <code>S</code> to take
+a <em>lifetime parameter</em>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct S&lt;'a&gt; {
+	value: &amp;'a i32,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>This is to say that <code>S</code> has a <em>generic lifetime parameter</em>. <code>S</code> itself has a
+lifetime.</p>
+<p>Whenever a new <code>S</code> value is created, its lifetime is constrained by its own
+lifetime as well as its generic lifetime parameter <code>'a</code>. Then, the lifetime
+parameter <code>'a</code> is required to outlive that of the container struct <code>S</code>.</p>
+<p>If there is another <code>struct T</code> which takes an <code>S</code> type as member, its lifetime
+parameter cannot be elided. Either an explicit lifetime must be provided,
+like <code>'static</code>, or <code>T</code> must also take a lifetime parameter.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct T {
+	s: S,  // illegal
+}
+<span class="boring">}
+</span></code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct T {
+	s: S&lt;'static&gt;,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct T&lt;'a&gt; {
+	s: &lt;'a&gt;,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>These lifetime parameters, when they cannot be elided, also serve as valuable
+documentation.</p>
+<p>For example, a function such as:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>fn parse_record&lt;'i&gt;(input: &amp;'i [u8]) -&gt; Record&lt;'i&gt; { ... } 
+<span class="boring">}
+</span></code></pre></pre>
+<p>Indicates that if a <code>Record</code> is returned from the function, then it's member
+reference(s) must be pointing to some part or element of the input slice due to
+the lifetime parameter being the same.</p>
+<h2><a class="header" href="#distinct-lifetime-parameters" id="distinct-lifetime-parameters">Distinct Lifetime Parameters</a></h2>
+<p>If there is some struct such as</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct S&lt;'a&gt; {
+	x: &amp;'a i32,
+	y: &amp;'a i32,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>But this is problematic if you wish to try to reference to two variables from an
+inner and outer scope, because their lifetimes do not unify to the single <code>'a</code>.</p>
+<p>Instead, two lifetime variables could be specified:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct S&lt;'a, 'b&gt; {
+	x: &amp;'a i32,
+	y: &amp;'b i32,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Then, they <em>could</em> have different lifetimes, but they also could be the same,
+which is more flexible.</p>
+<p>The same applies to function signatures, although lifetime parameters could
+potentially complicate the function signature.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>fn take_first&lt;'a, 'b&gt;(p1: &amp;'a i32, p2: &amp;'b i32) -&gt; &amp;'a i32 { p1 }
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#lifetime-parameter-elision" id="lifetime-parameter-elision">Lifetime Parameter Elision</a></h3>
+<p>The Rust compiler performs lifetime parameter elision for most of the trivial
+cases, so the programmer does not need to always explicitly spell out the
+lifetimes.</p>
 
                     </main>
 
