@@ -215,6 +215,8 @@ Rust has three loop variants:
 Loops in Rust are also expressions, but they all produce `()` and do not
 evaluate to other values.
 
+Loop expressions can be `break`ed or `continued`.
+
 ### `while` Loop
 
 Rust `while` loop is like C, except that the condition expression must evaluate
@@ -239,6 +241,10 @@ loop {
     // ...
 }
 ```
+
+There are somple subtle differences with respect to flow analysis and the
+limitations of type-checking that some valid constructs in `while (true)` may be
+rejected, and so `loop` is offered to be a somewhat less restrictive version.
 
 ### `for` loop
 
@@ -294,3 +300,198 @@ pub struct Range<T>
 
 And the operator `<begin?> .. <end?>` is syntax sugar for using the
 `std::ops::Range` `struct`, where `Range<T>: Iterator<T>`.
+
+> Reference: [std::iter::IntoIterator](https://doc.rust-lang.org/std/iter/trait.IntoIterator.html)
+
+`Range`s can be iterated over because it implements the
+`std::iter::IntoIterator` trait which means that it can be converted into an
+iterator when necessary by calling `.into_iter()`.
+
+
+Example: consuming value with move semantics
+
+```rurst
+let names: Vec<String> = produce_names();
+
+for name in names {
+    // each `name` from `names` moved to the local variable `name`
+    println!("name = {}", name);
+} // `names` consumed and dropped here!
+
+println!("names.len() = {}", names.len()); // `names` was consumed
+```
+
+This can be improved by using references so the value do not get consumed (or a
+mutable reference if needed to mutate any of the elements):
+
+```rust
+for name in &names {
+    println!("name = {}" , name);
+}
+```
+
+```rust
+for name in &mut names {
+    name.push('\n'); // concat newline to each `name`
+}
+```
+
+### `return` Expressions
+
+Returns the current function and returns control back to a caller, with a value
+that has the return type of the function.
+
+## Divergent Control Flow and the Never Type
+
+Rust's type system is influenced by control flow as well.
+
+But some expressions or constructs may not necessarily make sense to have a
+meaningful type `T`, for blocks with `break`, `return`, infinite loops, panics,
+process exists, etc., that have abnormal exit conditions or may not
+necessarily terminate at all.
+
+These expressions are assigned the special **never** type `!`.
+
+> Reference: [std::process::exit](https://doc.rust-lang.org/std/process/fn.exit.html)
+
+Here, the **never** type `!` signifies that `exit` never returns and is in fact
+a *divergent function*.
+
+## Functions and Method Calls
+
+A function call has the syntax
+
+```rust
+<function_name>(<parameter>, ...)
+```
+
+A method call has the syntax
+
+```rust
+<target>.<method_name>(<parameter>, ...)
+```
+
+Note that the method call is actually syntax sugar for the first `&self` or
+`&mut self` parameter, which is the `<target>`. So method calls are still
+function calls albeit special cased to make the expression more fluent in
+reading.
+
+A static method call, such as `Vec::new()`, also exists.
+
+The distinction between method calls and static method calls is that method
+calls can only be invoked on values whereas static method calls can be invoked
+on types in addition to values.
+
+Method calls can typically be chained.
+
+However, there are issues with respect to generic parameters' angle bracket
+syntax versus less than and greater than signs (specifically, their
+precedences). To disambiguate between order comparison and type parameter, the
+**turbofish** operator `e::<T>` is introduced to supply type parameter `T` to
+the previous expression `e`.
+
+```rust
+return Vec::<i32>::with_capacity(1000);
+```
+
+## Fields and Elements
+
+`struct` fields can be accessed with the dot `.` operator:
+`struct_name.field_name`.
+
+Tuple fields can be accessed by index: `tuple_name.0`.
+
+If the left-hand-side expression to the dot operator is a reference or smart
+pointer, it is automatically dereferenced.
+
+Array, slice or vector indexed accesss through square brackets are also
+automatically dereferenced: `slice_name[i]`.
+
+Field access, tuple indexed access and square bracket access are *lvalues* which
+can be assigned to (assuming *mut*).
+
+## Arithmetic, Bitwise, Comparison and Logical Operators
+
+> Reference: [std::ops](https://doc.rust-lang.org/std/ops/index.html)
+
+> Reference: [std::num::Wrapping](https://doc.rust-lang.org/std/num/struct.Wrapping.html)
+
+The typical `+`, `-`, `*`, `/` and `%` operators are produced, but integer
+overflow / underflow are checked and produce panics in debug builds.
+
+`a.wrapping_add(b)` and other unchecked arithmetic operators are provided
+through the standard library.
+
+Dividing-by-zero produce panics in all build types. `a.checked_div(b) ->
+Option<T>` is provided which does not panic.
+
+The typical bitwise operators `&` (bitwise and), `|` (bitwise or), `<<` and `>>`
+(left shift and right shift) are provided, as well as `!` (bitwise not).
+
+Equality (inequality) and partial equality operators are provided through
+`std::cmp`'s `Eq` and `PartialEq` operators, namely `==`, `!=`, `<=`, `>=`, `<`
+and `>=`.
+
+Logical short-circuiting operators `&&` (logical and) and `||` (logical or) are
+also available.
+
+## Assignment Operators
+
+The assignment operator `=` assignes a value expression to `mut` variables and
+in the case of struct or enum, to their fields. Assignments perform *moves* for
+non-`Copy` types instead of copy.
+
+Typical compound assignming `+=`, `-=`, etc. are also provided.
+
+Chain assignments are not supported.
+
+Increment and decrement operators `++` and `--` are not provided – the rationale
+of this is because they don't work well with non-`Copy`, have issues with return
+value, and is confusing with respect to wrapping behaviour.
+
+## Type Casts
+
+Type casts has the format `expr as T`.
+
+Permitted type casts include:
+
+- Casting from built-in numeric types from one to another.
+
+    + Casting wider type to narrower type casues truncation.
+    + Casting signed integer to wider type is sign-extended.
+    + Casting unsigned integer to wider type is zero-extended.
+    + Casting large floating-point to narrower integer is
+      **undefined behaviour** which should be avoided!
+      [#10184](https://github.com/rust-lang/rust/issues/10184).
+      This exists due to unfortunate historical reasons.
+
+- `bool`, `char` or C-like `enum` types (`#repr(C)` `enum`s) can be cast to
+  integer types.
+
+- Some unsafe pointer type casts are also permitted.
+
+> Reference: [std::ops::Deref](https://doc.rust-lang.org/std/ops/trait.Deref.html)
+
+Conversion typically requires casting, but several implicit conversions exist.
+
+- `mut` reference -> non-`mut` reference.
+- `&String` -> `&str`.
+- `&Vec<T>` -> `&[T]`.
+- `&Box<T>` -> `&T`.
+
+These are *deref coercions* which implement `Deref` trait.
+
+## Closures
+
+**Closures** (known as *lambda*s in some other languages) are function-like
+values, with an argument list in vertical bars and an expression.
+
+```rust
+let closure = | <argument>, ... | <body_expr>;
+```
+
+Rust usually can infer the types of the arguments and return type based on its
+context, but they can also be explicitly specified. If return type is specified,
+then the `<body_expr>` must be a block expression to disambiguate.
+
+Invoking a closure has the same syntax as a function.

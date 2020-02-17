@@ -15,5 +15,6 @@
 	+ [Shared Ownership](content/ownership/shared-ownership.md)
 	+ [References](content/ownership/references.md)
 - [Expressions](content/expressions/index.md)
+    + [Expression Listing](content/expressions/expression-listing.md)
 	+ [Remark: PartialEq vs Eq](content/expressions/remark-partialeq-eq.md)
 	+ [Remark: Type Variance](content/expressions/remark-variance.md)
