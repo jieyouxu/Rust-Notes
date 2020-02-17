@@ -84,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="../../content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="../../content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="../../content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="../../content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="../../content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="../../content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="../../content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="../../content/expressions/index.html" class="active"><strong aria-hidden="true">5.</strong> Expressions</a></li><li><ol class="section"><li class="expanded "><a href="../../content/expressions/remark-partialeq-eq.html"><strong aria-hidden="true">5.1.</strong> Remark: PartialEq vs Eq</a></li><li class="expanded "><a href="../../content/expressions/remark-variance.html"><strong aria-hidden="true">5.2.</strong> Remark: Type Variance</a></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="../../content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="../../content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="../../content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="../../content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="../../content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="../../content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="../../content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="../../content/expressions/index.html" class="active"><strong aria-hidden="true">5.</strong> Expressions</a></li><li><ol class="section"><li class="expanded "><a href="../../content/expressions/expression-listing.html"><strong aria-hidden="true">5.1.</strong> Expression Listing</a></li><li class="expanded "><a href="../../content/expressions/remark-partialeq-eq.html"><strong aria-hidden="true">5.2.</strong> Remark: PartialEq vs Eq</a></li><li class="expanded "><a href="../../content/expressions/remark-variance.html"><strong aria-hidden="true">5.3.</strong> Remark: Type Variance</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -345,6 +345,7 @@ to emit an error at compile-time.</p>
 </ol>
 <p>Loops in Rust are also expressions, but they all produce <code>()</code> and do not
 evaluate to other values.</p>
+<p>Loop expressions can be <code>break</code>ed or <code>continued</code>.</p>
 <h3><a class="header" href="#while-loop" id="while-loop"><code>while</code> Loop</a></h3>
 <p>Rust <code>while</code> loop is like C, except that the condition expression must evaluate
 to type <code>bool</code>, and supports <code>let</code> bindings as well.</p>
@@ -370,6 +371,9 @@ while let &lt;pattern&gt; = &lt;expr&gt; {
 }
 <span class="boring">}
 </span></code></pre></pre>
+<p>There are somple subtle differences with respect to flow analysis and the
+limitations of type-checking that some valid constructs in <code>while (true)</code> may be
+rejected, and so <code>loop</code> is offered to be a somewhat less restrictive version.</p>
 <h3><a class="header" href="#for-loop" id="for-loop"><code>for</code> loop</a></h3>
 <blockquote>
 <p>Reference: <a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html">std::iter::Iterator</a></p>
@@ -423,6 +427,176 @@ pub struct Range&lt;T&gt;
 </span></code></pre></pre>
 <p>And the operator <code>&lt;begin?&gt; .. &lt;end?&gt;</code> is syntax sugar for using the
 <code>std::ops::Range</code> <code>struct</code>, where <code>Range&lt;T&gt;: Iterator&lt;T&gt;</code>.</p>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/iter/trait.IntoIterator.html">std::iter::IntoIterator</a></p>
+</blockquote>
+<p><code>Range</code>s can be iterated over because it implements the
+<code>std::iter::IntoIterator</code> trait which means that it can be converted into an
+iterator when necessary by calling <code>.into_iter()</code>.</p>
+<p>Example: consuming value with move semantics</p>
+<pre><code class="language-rurst">let names: Vec&lt;String&gt; = produce_names();
+
+for name in names {
+    // each `name` from `names` moved to the local variable `name`
+    println!(&quot;name = {}&quot;, name);
+} // `names` consumed and dropped here!
+
+println!(&quot;names.len() = {}&quot;, names.len()); // `names` was consumed
+</code></pre>
+<p>This can be improved by using references so the value do not get consumed (or a
+mutable reference if needed to mutate any of the elements):</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>for name in &amp;names {
+    println!(&quot;name = {}&quot; , name);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>for name in &amp;mut names {
+    name.push('\n'); // concat newline to each `name`
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#return-expressions" id="return-expressions"><code>return</code> Expressions</a></h3>
+<p>Returns the current function and returns control back to a caller, with a value
+that has the return type of the function.</p>
+<h2><a class="header" href="#divergent-control-flow-and-the-never-type" id="divergent-control-flow-and-the-never-type">Divergent Control Flow and the Never Type</a></h2>
+<p>Rust's type system is influenced by control flow as well.</p>
+<p>But some expressions or constructs may not necessarily make sense to have a
+meaningful type <code>T</code>, for blocks with <code>break</code>, <code>return</code>, infinite loops, panics,
+process exists, etc., that have abnormal exit conditions or may not
+necessarily terminate at all.</p>
+<p>These expressions are assigned the special <strong>never</strong> type <code>!</code>.</p>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/process/fn.exit.html">std::process::exit</a></p>
+</blockquote>
+<p>Here, the <strong>never</strong> type <code>!</code> signifies that <code>exit</code> never returns and is in fact
+a <em>divergent function</em>.</p>
+<h2><a class="header" href="#functions-and-method-calls" id="functions-and-method-calls">Functions and Method Calls</a></h2>
+<p>A function call has the syntax</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>&lt;function_name&gt;(&lt;parameter&gt;, ...)
+<span class="boring">}
+</span></code></pre></pre>
+<p>A method call has the syntax</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>&lt;target&gt;.&lt;method_name&gt;(&lt;parameter&gt;, ...)
+<span class="boring">}
+</span></code></pre></pre>
+<p>Note that the method call is actually syntax sugar for the first <code>&amp;self</code> or
+<code>&amp;mut self</code> parameter, which is the <code>&lt;target&gt;</code>. So method calls are still
+function calls albeit special cased to make the expression more fluent in
+reading.</p>
+<p>A static method call, such as <code>Vec::new()</code>, also exists.</p>
+<p>The distinction between method calls and static method calls is that method
+calls can only be invoked on values whereas static method calls can be invoked
+on types in addition to values.</p>
+<p>Method calls can typically be chained.</p>
+<p>However, there are issues with respect to generic parameters' angle bracket
+syntax versus less than and greater than signs (specifically, their
+precedences). To disambiguate between order comparison and type parameter, the
+<strong>turbofish</strong> operator <code>e::&lt;T&gt;</code> is introduced to supply type parameter <code>T</code> to
+the previous expression <code>e</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>return Vec::&lt;i32&gt;::with_capacity(1000);
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#fields-and-elements" id="fields-and-elements">Fields and Elements</a></h2>
+<p><code>struct</code> fields can be accessed with the dot <code>.</code> operator:
+<code>struct_name.field_name</code>.</p>
+<p>Tuple fields can be accessed by index: <code>tuple_name.0</code>.</p>
+<p>If the left-hand-side expression to the dot operator is a reference or smart
+pointer, it is automatically dereferenced.</p>
+<p>Array, slice or vector indexed accesss through square brackets are also
+automatically dereferenced: <code>slice_name[i]</code>.</p>
+<p>Field access, tuple indexed access and square bracket access are <em>lvalues</em> which
+can be assigned to (assuming <em>mut</em>).</p>
+<h2><a class="header" href="#arithmetic-bitwise-comparison-and-logical-operators" id="arithmetic-bitwise-comparison-and-logical-operators">Arithmetic, Bitwise, Comparison and Logical Operators</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/ops/index.html">std::ops</a></p>
+</blockquote>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/num/struct.Wrapping.html">std::num::Wrapping</a></p>
+</blockquote>
+<p>The typical <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> and <code>%</code> operators are produced, but integer
+overflow / underflow are checked and produce panics in debug builds.</p>
+<p><code>a.wrapping_add(b)</code> and other unchecked arithmetic operators are provided
+through the standard library.</p>
+<p>Dividing-by-zero produce panics in all build types. <code>a.checked_div(b) -&gt; Option&lt;T&gt;</code> is provided which does not panic.</p>
+<p>The typical bitwise operators <code>&amp;</code> (bitwise and), <code>|</code> (bitwise or), <code>&lt;&lt;</code> and <code>&gt;&gt;</code>
+(left shift and right shift) are provided, as well as <code>!</code> (bitwise not).</p>
+<p>Equality (inequality) and partial equality operators are provided through
+<code>std::cmp</code>'s <code>Eq</code> and <code>PartialEq</code> operators, namely <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>&lt;</code>
+and <code>&gt;=</code>.</p>
+<p>Logical short-circuiting operators <code>&amp;&amp;</code> (logical and) and <code>||</code> (logical or) are
+also available.</p>
+<h2><a class="header" href="#assignment-operators" id="assignment-operators">Assignment Operators</a></h2>
+<p>The assignment operator <code>=</code> assignes a value expression to <code>mut</code> variables and
+in the case of struct or enum, to their fields. Assignments perform <em>moves</em> for
+non-<code>Copy</code> types instead of copy.</p>
+<p>Typical compound assignming <code>+=</code>, <code>-=</code>, etc. are also provided.</p>
+<p>Chain assignments are not supported.</p>
+<p>Increment and decrement operators <code>++</code> and <code>--</code> are not provided – the rationale
+of this is because they don't work well with non-<code>Copy</code>, have issues with return
+value, and is confusing with respect to wrapping behaviour.</p>
+<h2><a class="header" href="#type-casts" id="type-casts">Type Casts</a></h2>
+<p>Type casts has the format <code>expr as T</code>.</p>
+<p>Permitted type casts include:</p>
+<ul>
+<li>
+<p>Casting from built-in numeric types from one to another.</p>
+<ul>
+<li>Casting wider type to narrower type casues truncation.</li>
+<li>Casting signed integer to wider type is sign-extended.</li>
+<li>Casting unsigned integer to wider type is zero-extended.</li>
+<li>Casting large floating-point to narrower integer is
+<strong>undefined behaviour</strong> which should be avoided!
+<a href="https://github.com/rust-lang/rust/issues/10184">#10184</a>.
+This exists due to unfortunate historical reasons.</li>
+</ul>
+</li>
+<li>
+<p><code>bool</code>, <code>char</code> or C-like <code>enum</code> types (<code>#repr(C)</code> <code>enum</code>s) can be cast to
+integer types.</p>
+</li>
+<li>
+<p>Some unsafe pointer type casts are also permitted.</p>
+</li>
+</ul>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/ops/trait.Deref.html">std::ops::Deref</a></p>
+</blockquote>
+<p>Conversion typically requires casting, but several implicit conversions exist.</p>
+<ul>
+<li><code>mut</code> reference -&gt; non-<code>mut</code> reference.</li>
+<li><code>&amp;String</code> -&gt; <code>&amp;str</code>.</li>
+<li><code>&amp;Vec&lt;T&gt;</code> -&gt; <code>&amp;[T]</code>.</li>
+<li><code>&amp;Box&lt;T&gt;</code> -&gt; <code>&amp;T</code>.</li>
+</ul>
+<p>These are <em>deref coercions</em> which implement <code>Deref</code> trait.</p>
+<h2><a class="header" href="#closures" id="closures">Closures</a></h2>
+<p><strong>Closures</strong> (known as <em>lambda</em>s in some other languages) are function-like
+values, with an argument list in vertical bars and an expression.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let closure = | &lt;argument&gt;, ... | &lt;body_expr&gt;;
+<span class="boring">}
+</span></code></pre></pre>
+<p>Rust usually can infer the types of the arguments and return type based on its
+context, but they can also be explicitly specified. If return type is specified,
+then the <code>&lt;body_expr&gt;</code> must be a block expression to disambiguate.</p>
+<p>Invoking a closure has the same syntax as a function.</p>
 
                     </main>
 
@@ -435,7 +609,7 @@ pub struct Range&lt;T&gt;
                         
 
                         
-                            <a rel="next" href="../../content/expressions/remark-partialeq-eq.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../../content/expressions/expression-listing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -453,7 +627,7 @@ pub struct Range&lt;T&gt;
                 
 
                 
-                    <a href="../../content/expressions/remark-partialeq-eq.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a href="../../content/expressions/expression-listing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

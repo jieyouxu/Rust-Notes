@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Basic Concurrency - Rust Notes</title>
+        <title>Expression Listing - Rust Notes</title>
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -84,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html" class="active"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="../../content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="../../content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="../../content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="../../content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="../../content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="../../content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="../../content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="../../content/expressions/index.html"><strong aria-hidden="true">5.</strong> Expressions</a></li><li><ol class="section"><li class="expanded "><a href="../../content/expressions/expression-listing.html"><strong aria-hidden="true">5.1.</strong> Expression Listing</a></li><li class="expanded "><a href="../../content/expressions/remark-partialeq-eq.html"><strong aria-hidden="true">5.2.</strong> Remark: PartialEq vs Eq</a></li><li class="expanded "><a href="../../content/expressions/remark-variance.html"><strong aria-hidden="true">5.3.</strong> Remark: Type Variance</a></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="../../content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="../../content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="../../content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="../../content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="../../content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="../../content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="../../content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="../../content/expressions/index.html"><strong aria-hidden="true">5.</strong> Expressions</a></li><li><ol class="section"><li class="expanded "><a href="../../content/expressions/expression-listing.html" class="active"><strong aria-hidden="true">5.1.</strong> Expression Listing</a></li><li class="expanded "><a href="../../content/expressions/remark-partialeq-eq.html"><strong aria-hidden="true">5.2.</strong> Remark: PartialEq vs Eq</a></li><li class="expanded "><a href="../../content/expressions/remark-variance.html"><strong aria-hidden="true">5.3.</strong> Remark: Type Variance</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -151,65 +151,73 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#concurrency" id="concurrency">Concurrency</a></h1>
-<p>Rust's type system and the <strong>borrow checker</strong> (<code>borrowck</code>) prevents code which
-contains memory errors from compiling (unless you use <code>unsafe</code>).</p>
-<blockquote>
-<p>Reference: <a href="https://www.slideshare.net/nikomatsakis/rust-concurrency-tutorial-2015-1202">nikomatsakis</a></p>
-</blockquote>
-<blockquote>
-<p>Great talk by Niko Matsakis: <a href="https://www.youtube.com/watch?v=lO1z-7cuRYI">C++Now 2017: Niko Matsakis &quot;Rust: Hack Without Fear!&quot;</a></p>
-</blockquote>
-<blockquote>
-<p>Blog post: <a href="https://blog.rust-lang.org/2015/04/10/Fearless-Concurrency.html">Fearless Concurrency</a></p>
-</blockquote>
-<ul>
-<li>This is the <strong>ownership/borrowing</strong> system + traits:
-<ul>
-<li>Does not need runtime (compared to C++).</li>
-<li>Guaranteed memory safety (no need for garbage collection).</li>
-<li>No data races.</li>
-</ul>
-</li>
-</ul>
-<h2><a class="header" href="#principled-aliasing-and-mutations" id="principled-aliasing-and-mutations">Principled Aliasing and Mutations</a></h2>
-<p>With the ownership and borrowing system in Rust, by utilizing suitable scoping
-rules (<strong>lifetime</strong>s) and the type system, we can have principled aliasing and
-mutations for avoiding problems such as data races and liveness issues.</p>
-<p>The key is to have <em>mutually exclusive</em> <strong>aliasing</strong> versus <strong>mutations</strong> which
-are enforced by Rust's type system.</p>
-<table><thead><tr><th>Type</th><th>Ownership</th><th>Alias Allowed</th><th>Mutation Allowed</th></tr></thead><tbody>
-<tr><td><code>T</code></td><td>Owned</td><td>❌</td><td>✅</td></tr>
-<tr><td><code>&amp;T</code></td><td>Shared reference</td><td>✅</td><td>❌</td></tr>
-<tr><td><code>&amp;mut T</code></td><td>Mutable reference</td><td>❌</td><td>✅</td></tr>
+                        <h1><a class="header" href="#expression-listing" id="expression-listing">Expression Listing</a></h1>
+<table><thead><tr><th>Expression</th><th>Example</th><th>Related traits</th></tr></thead><tbody>
+<tr><td>Array literal</td><td><code>[1, 2]</code></td><td></td></tr>
+<tr><td>Repeated array literal</td><td><code>[0; 50]</code></td><td></td></tr>
+<tr><td>Tuple</td><td><code>(1, 'a')</code></td><td></td></tr>
+<tr><td>Struct literal</td><td><code>Point {x: 0, y: 0} </code></td><td></td></tr>
+<tr><td>Tuple field access</td><td><code>x.0</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Deref.html">std::ops::Deref</a>, <a href="https://doc.rust-lang.org/std/ops/trait.DerefMut.html">std::ops::DerefMut</a></td></tr>
+<tr><td>Struct field access</td><td><code>struct_name.field_name</code></td><td><code>Deref</code>, <code>DerefMut</code></td></tr>
+<tr><td>Method invocation</td><td><code>target.run()</code></td><td><code>Deref</code>, <code>DerefMut</code></td></tr>
+<tr><td>Function invocation</td><td><code>stdin()</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Fn.html">std::ops::Fn</a>, <a href="https://doc.rust-lang.org/std/ops/trait.FnMut.html">std::ops::FnMut</a>, <a href="https://doc.rust-lang.org/std/ops/trait.FnOnce.html">std::ops::FnOnce</a></td></tr>
+<tr><td>Indexed access</td><td><code>x[i]</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Index.html">std::ops::Index</a>, <a href="https://doc.rust-lang.org/std/ops/trait.IndexMut.html">std::ops::IndexMut</a>, <code>Deref</code>, <code>DerefMut</code></td></tr>
+<tr><td>Try</td><td><code>File::open(&quot;src&quot;)?</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Try.html">std::ops::Try</a></td></tr>
 </tbody></table>
-<h2><a class="header" href="#concurrency-paradigms" id="concurrency-paradigms">Concurrency Paradigms</a></h2>
-<p>Rust does not have &quot;default&quot; concurrency paradigm, instead it supports all of
-them:</p>
-<table><thead><tr><th>Concurrency Paradigm</th><th>Addressed by Ownership</th><th>Addressed by Borrowing</th><th>Notable Usages</th></tr></thead><tbody>
-<tr><td>Fork-join</td><td></td><td>✅</td><td>C</td></tr>
-<tr><td>Message passing</td><td></td><td>✅</td><td>Erlang/Elixir</td></tr>
-<tr><td>Locking</td><td>✅</td><td>✅</td><td>C, Java</td></tr>
-<tr><td>Lock-free</td><td>✅</td><td>✅</td><td>C, Java</td></tr>
-<tr><td>Futures (Async/Await)</td><td>✅</td><td>✅</td><td>JavaScript (node.js)</td></tr>
+<table><thead><tr><th>Expression</th><th>Example</th><th>Related traits</th></tr></thead><tbody>
+<tr><td>Grouping</td><td><code>(1 + 1)</code></td><td></td></tr>
+<tr><td>Block</td><td><code>{ a; b }</code></td><td></td></tr>
+<tr><td>If</td><td><code>if expr { body }</code></td><td></td></tr>
+<tr><td>If-else</td><td><code>if expr { body_1 } else { body_2 }</code></td><td></td></tr>
+<tr><td>If-let</td><td><code>if let Some(v) = expr { v } else {0}</code></td><td></td></tr>
+<tr><td>Match</td><td><code>match expr { Some(v) =&gt; v, None =&gt; 0 }</code></td><td></td></tr>
+<tr><td>For</td><td><code>for val in values {}</code></td><td><a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html">std::iter::Iterator</a>, <a href="https://doc.rust-lang.org/std/iter/trait.IntoIterator.html">std::iter::IntoIterator</a></td></tr>
+<tr><td>While</td><td><code>while expr { }</code></td><td></td></tr>
+<tr><td>While-let</td><td><code>while let Some(x) = iter.next() { }</code></td><td></td></tr>
+<tr><td>Loop</td><td><code>loop {}</code></td><td></td></tr>
 </tbody></table>
-<blockquote>
-<p>Great talk by Jon Gjengset on <a href="https://www.youtube.com/watch?v=s19G6n0UjsM&amp;t=1118s">Noria: Lock-free concurrent database</a></p>
-<p>Lock-free, eventually consistent, concurrent multi-value map: <a href="https://github.com/jonhoo/rust-evmap">jonhoo/rust-evmap</a></p>
-</blockquote>
+<table><thead><tr><th>Expression</th><th>Example</th><th>Related traits</th></tr></thead><tbody>
+<tr><td>Logical/bitwise NOT</td><td><code>!expr</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Not.html">std::ops::Not</a></td></tr>
+<tr><td>Logical AND</td><td><code>a &amp;&amp; b</code></td><td></td></tr>
+<tr><td>Logical OR</td><td>`a</td><td></td></tr>
+<tr><td>Negation</td><td><code>-num</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Neg.html">std::ops::Neg</a></td></tr>
+<tr><td>Dereference</td><td><code>*ptr</code></td><td><code>Deref</code>, <code>DerefMut</code></td></tr>
+<tr><td>Borrow</td><td><code>&amp;val</code></td><td></td></tr>
+<tr><td>Type cast</td><td><code>val as u32</code></td><td></td></tr>
+<tr><td>Multiplication</td><td><code>n * 1</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Mul.html">std::ops::Mul</a></td></tr>
+<tr><td>Division</td><td><code>n / 2</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Div.html">std::ops::Div</a></td></tr>
+<tr><td>Addition</td><td><code>n + 2</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Add.html">std::ops::Add</a></td></tr>
+<tr><td>Subtraction</td><td><code>n - 2</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Sub.html">std::ops::Sub</a></td></tr>
+<tr><td>Remainer (modulo)</td><td><code>n % 2</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Rem.html">std::ops::Rem</a></td></tr>
+<tr><td>Left shift</td><td><code>n &lt;&lt; 2</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Shl.html">std::ops::Shl</a></td></tr>
+<tr><td>Right shift</td><td><code>n &gt;&gt; 2</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.Shr.html">std::ops::Shr</a></td></tr>
+<tr><td>Bitwise AND</td><td><code>n &amp; 1</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.BitAnd.html">std::ops::BitAnd</a></td></tr>
+<tr><td>Bitwise OR</td><td>`n</td><td>1`</td></tr>
+<tr><td>BItwise XOR</td><td><code>n ^ 2</code></td><td><a href="https://doc.rust-lang.org/std/ops/trait.BitXor.html">std::ops::BitXor</a></td></tr>
+<tr><td>Less than</td><td><code>n &lt; 0</code></td><td><a href="https://doc.rust-lang.org/std/cmp/trait.PartialOrd.html">std::cmp::PartialOrd</a></td></tr>
+<tr><td>Less than equal</td><td><code>n &lt;= 0</code></td><td><code>PartialEq</code></td></tr>
+<tr><td>Greater than</td><td><code>n &gt; 0</code></td><td><code>PartialEq</code></td></tr>
+<tr><td>Greater than equal</td><td><code>n &gt;= 0</code></td><td><code>PartialEq</code></td></tr>
+<tr><td>Equal</td><td><code>n == 0</code></td><td><code>PartialEq</code></td></tr>
+<tr><td>Not equal</td><td><code>n != 0</code></td><td><code>PartialEq</code></td></tr>
+<tr><td>Range</td><td><code>start .. stop</code></td><td><a href="https://doc.rust-lang.org/std/ops/struct.Range.html">std::ops::Range</a></td></tr>
+<tr><td>Assignment</td><td><code>a = b</code></td><td></td></tr>
+<tr><td>Compound assignment</td><td><em>omitted</em></td><td><code>std::ops::xxxAssign</code></td></tr>
+<tr><td>Closure</td><td><code>⎮a, b⎮ a + b</code></td><td></td></tr>
+</tbody></table>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="../../content/basics/example-simple-web-server.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../content/expressions/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="../../content/basics/example-mandelbrot-set.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../../content/expressions/remark-partialeq-eq.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -221,13 +229,13 @@ them:</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a href="../../content/basics/example-simple-web-server.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a href="../../content/expressions/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a href="../../content/basics/example-mandelbrot-set.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a href="../../content/expressions/remark-partialeq-eq.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
