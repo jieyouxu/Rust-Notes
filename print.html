@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="content/expressions/index.html"><strong aria-hidden="true">5.</strong> Expressions</a></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="content/expressions/index.html"><strong aria-hidden="true">5.</strong> Expressions</a></li><li><ol class="section"><li class="expanded "><a href="content/expressions/remark-partialeq-eq.html"><strong aria-hidden="true">5.1.</strong> Remark: PartialEq vs Eq</a></li><li class="expanded "><a href="content/expressions/remark-variance.html"><strong aria-hidden="true">5.2.</strong> Remark: Type Variance</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -2631,13 +2631,13 @@ ternary operator <code>&lt;bool_expr&gt; : &lt;expr_if_true&gt; ? &lt;expr_if_fa
 <h2><a class="header" href="#blocks-semicolons" id="blocks-semicolons">Blocks, Semicolons</a></h2>
 <p>Blocks in Rust are <em>expressions</em>. A block can contain zero or more statements,
 and an ending expression or statement; conceptually:</p>
-<pre><code class="language-enbf">&lt;block&gt; 	::= &lt;statements&gt;? &lt;expression&gt;     /* ends with expression */
-			|   &lt;statements&gt;? &lt;statement&gt;
+<pre><code class="language-enbf">&lt;block&gt;     ::= &lt;statements&gt;? &lt;expression&gt;     /* ends with expression */
+            |   &lt;statements&gt;? &lt;statement&gt;
 
-&lt;statements&gt; 	::= &lt;statement&gt;
-				|   &lt;statement&gt; &lt;statements&gt;
+&lt;statements&gt;    ::= &lt;statement&gt;
+                |   &lt;statement&gt; &lt;statements&gt;
 
-&lt;statement&gt; 	::= &lt;expression&gt; &quot;;&quot;
+&lt;statement&gt;     ::= &lt;expression&gt; &quot;;&quot;
 </code></pre>
 <p>Or in a pseudo Abstract Syntax Tree:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -2646,14 +2646,348 @@ and an ending expression or statement; conceptually:</p>
 </span>type Stmts = Vec&lt;Stmt&gt;;
 
 enum Block {
-	StatementBlock(Option&lt;Stmts&gt;, Expr),
-	ExpressionBlock(Option&lt;Stmts&gt;, Stmt),
+    StatementBlock(Option&lt;Stmts&gt;, Expr),
+    ExpressionBlock(Option&lt;Stmts&gt;, Stmt),
 }
 <span class="boring">}
 </span></code></pre></pre>
 <p>If a <code>&lt;block&gt;</code> ends in an <code>&lt;expression&gt;</code>, then the <code>&lt;block&gt;</code> evaluates to the
 value of the <code>&lt;expression&gt;</code>. Otherwise, the statement block variant evaluates to
 <code>()</code> (unit) representing empty value.</p>
+<p>So semicolons do serve a more important role semantically – Rust uses the
+semicolon <code>;</code> to distinguish between <em>expressions</em> and <em>statements</em>. Expressions
+<code>e: T</code> produce values of type <code>T</code>, whereas statements always produce unit <code>()</code>.</p>
+<h2><a class="header" href="#declarations" id="declarations">Declarations</a></h2>
+<p>To declare local variables, <code>let</code> declarations may be used.</p>
+<p>Each <code>let</code> declaration has the form</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let identifier: T = expr;
+<span class="boring">}
+</span></code></pre></pre>
+<p>Where <code>identifier</code> is the name of the local variable of type <code>T</code>.</p>
+<p>A variable can either be initialized by assigning to it <code>expr</code> upon declaration,
+or be uninitialized if assignment is to be deferred.</p>
+<p>Attempts to use unitialized variables will cause panics – to avoid undefined
+behaviour such as accessing arbitary memory regions or runtime segmenatation
+faults.</p>
+<h3><a class="header" href="#name-shadowing" id="name-shadowing">Name-shadowing</a></h3>
+<p>Rust allows <code>let</code> bindings for a variable with name <code>identifier</code> to override
+preceding bindings of the same name – this is called <em>name shadowing</em>.</p>
+<p><code>let</code> declaration for a variable of the same name recreates a new variable of
+possibly a different type.</p>
+<p>This is typically useful when transforming a value between different types. For
+example,</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let val = &quot;123&quot;;
+let val = val.parse::&lt;i32&gt;().unwrap();
+<span class="boring">}
+</span></code></pre></pre>
+<p>In which case without name shadowing, the programmer will likely need to encode
+the type in the variable name just so the two variables don't have name
+collisions.</p>
+<p><em>Use name-shadowing responsibily. Using name-shadowing to improve readability,
+not to hinder readability.</em></p>
+<h3><a class="header" href="#item-declarations" id="item-declarations">Item Declarations</a></h3>
+<p>Rust permits <em>item declarations</em> within blocks. Such <em>item declaration</em> can be
+<code>fn</code>, <code>struct</code> and <code>use</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>fn outer_fn() -&gt; i32 {
+    let a = 2;
+
+    fn increment_by_one(v: i32) -&gt; i32 {
+        v + 1
+    }
+
+    increment_by_one(a)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>In such cases, when <code>increment_by_one</code> is declared within the outer block, its
+effective scope is the entire block - that is, analogous to JavaScript's
+behaviour in this case, the function declaration and definition is <em>hoisted</em> to
+the top of the block.</p>
+<p>Such nested <code>fn</code>s have different scoping rules compared to JavaScript though.
+The nested <code>increment_by_one</code> does not have access to local variables or
+arguments from its enclosing block, because nested <code>fn</code>s <em>do not capture its
+context</em>. If such behaviour is needed, a <strong>closure</strong> is a more suitable
+construct.</p>
+<h2><a class="header" href="#if-and-match-expressions" id="if-and-match-expressions"><code>if</code> and <code>match</code> Expressions</a></h2>
+<h3><a class="header" href="#if-expression" id="if-expression"><code>if</code> Expression</a></h3>
+<p>Rust's <code>if</code> expression is similar to C.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>if &lt;predicate_1&gt; {
+    &lt;block_expr_1&gt;
+} else if &lt;predicate_2&gt; {
+    &lt;block_expr_2&gt;
+// ...
+} else {
+    &lt;block_n&gt;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Rust does <em>not</em> permit implicit type casts from arbitary types to <code>bool</code>. Each
+of the <code>&lt;predicate_i&gt;</code> conditions <em>must</em> be of type <code>bool</code> explicitly. This rule
+is enforced for numbers as well.</p>
+<p>Rust does not require parentheses for the <code>&lt;predicate_i&gt;</code> conditions.</p>
+<p>Additionally, Rust requires that for each branch of the <code>if</code> expression, that
+their respective body expressions must be homomorphic in their types. That is,
+if one branch is of type <code>T</code>, then each of the other branches must also have
+type <code>V: T</code> where <code>V</code> is compatible with <code>T</code>.</p>
+<h3><a class="header" href="#let-bindings" id="let-bindings">Let Bindings</a></h3>
+<p><code>if</code> expression can have <code>let</code> bindings to be more expressive.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>if let &lt;pattern&gt; = &lt;expr&gt; {
+    &lt;block_1&gt;
+} else {
+    &lt;block_2&gt;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>This is useful especially for retrieving data out of <code>struct</code>s or <code>enum</code>s, such
+as <code>Result&lt;T, E&gt;</code> or <code>Option&lt;T&gt;</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>if let Ok(n) = str.parse::&lt;i32&gt;() {
+    println!(&quot;successfully parsed n = {}&quot;, n);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#match-expression" id="match-expression"><code>match</code> Expression</a></h3>
+<p>Rust's <code>match</code> expression is similar to C <code>switch</code> statements but more powerful.</p>
+<p>Each <code>match</code> expression has the form</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>match &lt;expr&gt; {
+    &lt;case_expr_1&gt; =&gt; &lt;expr_body_1&gt;,
+    // ...
+    _ =&gt; &lt;expr_body_n&gt;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Where <code>_</code> serves as the <em>catch-all</em> / <em>default</em> branch to guarantee exhaustive
+matching. This means that if the overall <code>match</code> expression has type <code>T</code>, then
+each of the branches must yield a value of type <code>V: T</code> that is compatible with
+<code>T</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>match statusCode {
+    403 =&gt; HttpStatus::Forbidden,
+    404 =&gt; HttpStatus::NotFound,
+    500 =&gt; HttpStatus::InternalServerError,
+    _ =&gt; HttpStatus::Unknown,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Such trivial cases are optimized through <em>jump tables</em> or <em>branch tables</em> to
+guarantee \( \mathcal{O}(1) \) time complexity.</p>
+<p>Rust <code>match</code> also supports <em>pattern matching</em>, where the pattern match can occur
+in the left-hand-side of the <code>=&gt;</code> in each <em>arm</em> or branch of the <code>match</code>
+expression.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>match str_val.parse::&lt;i32&gt;() {
+    Ok(value) =&gt; println!(&quot;value = {}&quot;, value),
+    Err(_) =&gt; println!(&quot;parsing failed!&quot;),
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Rust requires that the <code>match</code> expression must be <em>exhaustive</em>. <code>match</code>
+expressions that does not cover all the possible cases will cause the compiler
+to emit an error at compile-time.</p>
+<h2><a class="header" href="#loops" id="loops">Loops</a></h2>
+<p>Rust has three loop variants:</p>
+<ol>
+<li><code>while</code> loop.</li>
+<li><code>loop</code> (sugar for <code>while true</code>).</li>
+<li><code>for</code> loop.</li>
+</ol>
+<p>Loops in Rust are also expressions, but they all produce <code>()</code> and do not
+evaluate to other values.</p>
+<h3><a class="header" href="#while-loop" id="while-loop"><code>while</code> Loop</a></h3>
+<p>Rust <code>while</code> loop is like C, except that the condition expression must evaluate
+to type <code>bool</code>, and supports <code>let</code> bindings as well.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>while &lt;bool_expr&gt; {
+    // ...
+}
+
+while let &lt;pattern&gt; = &lt;expr&gt; {
+    // ...
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#loop-loop" id="loop-loop"><code>loop</code> loop</a></h3>
+<p>Infinite loops (aka <code>while true</code>) can be written via the <code>loop</code> syntax sugar.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>loop {
+    // ...
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#for-loop" id="for-loop"><code>for</code> loop</a></h3>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html">std::iter::Iterator</a></p>
+</blockquote>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>for &lt;pattern&gt; in &lt;iterable_expr&gt; {
+    &lt;body_expr&gt;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Rust's <code>for</code> loop iterates over its expression that evaluates to an <code>Iterator</code>.</p>
+<p>The minimal definition for Rust's <code>Iterator</code> trait is given as</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub trait Iterator {
+    type Item;
+
+    pub next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Note <code>mut</code> is needed because <code>next</code> should advance the iterator which will
+change its internal state. The possibility that the <code>Iterator</code> finishes
+iterating is encoded by the return type <code>Option&lt;Self::Item&gt;</code>, and is expressed
+with the value <code>None</code>.</p>
+<p>Interally, Rust desugars the <code>for</code> expression like so:</p>
+<pre><code>while let Some(value) = iterable_expr.next() {
+    body_expr
+}
+</code></pre>
+<p>Rust has sugar for <strong>range</strong>s, where each <em>range</em> is a struct with fields
+<code>start</code> and <code>end</code>.</p>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/ops/struct.Range.html">std::ops::Range</a></p>
+</blockquote>
+<p>The <code>std::ops::Range</code> <code>struct</code> is defined (simplified) as:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>#[derive(Clone, PartialEq, Eq, Hash)]
+pub struct Range&lt;T&gt;
+    where T: Clone + PartialEq + Eq + Hash
+{
+    start: T;
+    end: T;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>And the operator <code>&lt;begin?&gt; .. &lt;end?&gt;</code> is syntax sugar for using the
+<code>std::ops::Range</code> <code>struct</code>, where <code>Range&lt;T&gt;: Iterator&lt;T&gt;</code>.</p>
+<h1><a class="header" href="#remark-partialeq-vs-eq" id="remark-partialeq-vs-eq">Remark: <code>PartialEq</code> vs <code>Eq</code></a></h1>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/cmp/trait.PartialEq.html">std::cmp::PartialEq</a></p>
+</blockquote>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/cmp/trait.Eq.html">std::comp:Eq</a></p>
+</blockquote>
+<p>These two traits are different; namely, <code>Eq</code> is a stronger equivalence
+relation compared to <code>PartialEq</code> because:</p>
+<ul>
+<li>
+<p><code>PartialEq</code> requires:</p>
+<ul>
+<li>
+<p><strong>Symmetry</strong>:</p>
+<p>\[
+\forall a, b \colon a == b \to b == a
+\]</p>
+</li>
+<li>
+<p><strong>Transitivity</strong>:</p>
+<p>\[
+\forall a, b, c \colon a == b \land b == c \to a == c
+\]</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>Eq</code> requires <em>reflexitivity</em> in addition to <em>symmetry</em> and <em>transitivity</em>:</p>
+<ul>
+<li>
+<p><strong>Reflexitivity</strong>:</p>
+<p>\[
+\forall a \colon a == a<br />
+\]</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>There are specific types and values for which <em>reflexitivity</em> may not be
+satisfied. A good example of this is floating-point numbers, <code>f32</code> and
+<code>f64</code>, where the special value <code>NaN</code> is specifically defined in IEEE-754 to
+be \( \mathtt{NaN} \mathbin{\texttt{!=}} \mathtt{NaN} \equiv \mathtt{true} \).</p>
+<p>And so, the <code>std::ops::Range</code> cannot be used with floating-point numbers
+because <code>f32</code> and <code>f64</code> are not <code>Eq</code> – which makes sense, given the
+existence of <code>NaN</code>!</p>
+<h1><a class="header" href="#subtyping-variance" id="subtyping-variance">Subtyping Variance</a></h1>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/nomicon/subtyping.html">Subtyping and Variance</a></p>
+</blockquote>
+<blockquote>
+<p>Reference: <a href="https://docs.scala-lang.org/tour/variances.html">Variance in Scala</a></p>
+</blockquote>
+<p><strong>Variance</strong> is a property for <em>type constructors</em> with respect to their type
+parameter. Given a type <code>I[T]</code> where <code>I</code> is a higher-kinded type constructor of
+kind <code>* -&gt; *</code>, generic over a single type parameter <code>T</code>, then <em>variance</em> is a
+property of <code>I</code> with respect to <code>T</code>.</p>
+<ul>
+<li>
+<p><code>I</code> is <strong>covariant</strong> iff <code>I&lt;Sub&gt;</code> is a subtype of <code>I&lt;Super&gt;</code>.</p>
+</li>
+<li>
+<p><code>I</code> is <strong>contravariant</strong> iff <code>I&lt;Super&gt;</code> is a subtype of <code>I&lt;Sub&gt;</code> (reversed).</p>
+</li>
+<li>
+<p><code>I</code> is <strong>invariant</strong> if no subtyping exists between <code>I&lt;Super&gt;</code> and <code>I&lt;Sub&gt;</code>.</p>
+<ul>
+<li>This is the case for Java's generics: <code>List&lt;T&gt;</code> is invariant over its type
+parameter <code>T</code>, causing <code>List&lt;Dog&gt;</code> to not be a subtype of
+<code>List&lt;Animal&gt;</code> even if <code>Dog extends Animal</code>.</li>
+</ul>
+</li>
+</ul>
+<p>If some type <code>J</code> is a higher-kinded type constructor with more than one type
+parameter, then variance can be described with respect to one of the type
+parameters individually.</p>
+<p>Typically, <em>covariance</em> is the most common type of variance.</p>
+<p>Rust needs to consider variance also with respect to <em>lifetimes</em>, which is in
+fact also part of the type system!</p>
+<table><thead><tr><th>Type</th><th>Lifetime Variance (<code>'a</code>)</th><th><code>T</code></th><th><code>U</code></th></tr></thead><tbody>
+<tr><td><code>&amp;'a T</code></td><td>covariant</td><td>covariant</td><td></td></tr>
+<tr><td><code>&amp;'a mut T</code></td><td>covariant</td><td>invariant</td><td></td></tr>
+<tr><td><code>Box&lt;T&gt;</code></td><td></td><td>covariant</td><td></td></tr>
+<tr><td><code>Vec&lt;T&gt;</code></td><td></td><td>covariant</td><td></td></tr>
+<tr><td><code>UnsafeCell&lt;T&gt;</code></td><td></td><td>invariant</td><td></td></tr>
+<tr><td><code>Cell&lt;T&gt;</code></td><td></td><td>invariant</td><td></td></tr>
+<tr><td><code>fn(T) -&gt; U</code></td><td></td><td>contravariant*</td><td>covariant</td></tr>
+<tr><td><code>*const T</code></td><td></td><td>covariant</td><td></td></tr>
+<tr><td><code>*mut T</code></td><td></td><td>invariant</td><td></td></tr>
+</tbody></table>
+<ul>
+<li>Note the single source of contravariance, in the parameters to a function!</li>
+</ul>
 
                     </main>
 
