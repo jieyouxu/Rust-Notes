@@ -18,3 +18,5 @@
     + [Expression Listing](content/expressions/expression-listing.md)
 	+ [Remark: PartialEq vs Eq](content/expressions/remark-partialeq-eq.md)
 	+ [Remark: Type Variance](content/expressions/remark-variance.md)
+- [Error Handling](content/error-handling/index.md)
+
