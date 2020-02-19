@@ -1,0 +1,368 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Error Handling - Rust Notes</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../../prefix_content/introduction.html">Introduction</a></li><li class="expanded "><a href="../../content/preliminaries.html"><strong aria-hidden="true">1.</strong> Preliminaries</a></li><li class="expanded "><a href="../../content/basics/index.html"><strong aria-hidden="true">2.</strong> Basics</a></li><li><ol class="section"><li class="expanded "><a href="../../content/basics/example-cli.html"><strong aria-hidden="true">2.1.</strong> Example: Handling CLI Arguments</a></li><li class="expanded "><a href="../../content/basics/example-simple-web-server.html"><strong aria-hidden="true">2.2.</strong> Example: Simple Web Server</a></li><li class="expanded "><a href="../../content/basics/concurrency.html"><strong aria-hidden="true">2.3.</strong> Basic Concurrency</a></li><li class="expanded "><a href="../../content/basics/example-mandelbrot-set.html"><strong aria-hidden="true">2.4.</strong> Example: Mandelbrot Set</a></li></ol></li><li class="expanded "><a href="../../content/basic-types/index.html"><strong aria-hidden="true">3.</strong> Basic Types</a></li><li class="expanded "><a href="../../content/ownership/index.html"><strong aria-hidden="true">4.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="../../content/ownership/moves.html"><strong aria-hidden="true">4.1.</strong> Moves</a></li><li class="expanded "><a href="../../content/ownership/copy.html"><strong aria-hidden="true">4.2.</strong> Copy Types</a></li><li class="expanded "><a href="../../content/ownership/shared-ownership.html"><strong aria-hidden="true">4.3.</strong> Shared Ownership</a></li><li class="expanded "><a href="../../content/ownership/references.html"><strong aria-hidden="true">4.4.</strong> References</a></li></ol></li><li class="expanded "><a href="../../content/expressions/index.html"><strong aria-hidden="true">5.</strong> Expressions</a></li><li><ol class="section"><li class="expanded "><a href="../../content/expressions/expression-listing.html"><strong aria-hidden="true">5.1.</strong> Expression Listing</a></li><li class="expanded "><a href="../../content/expressions/remark-partialeq-eq.html"><strong aria-hidden="true">5.2.</strong> Remark: PartialEq vs Eq</a></li><li class="expanded "><a href="../../content/expressions/remark-variance.html"><strong aria-hidden="true">5.3.</strong> Remark: Type Variance</a></li></ol></li><li class="expanded "><a href="../../content/error-handling/index.html" class="active"><strong aria-hidden="true">6.</strong> Error Handling</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust Notes</h1>
+
+                        <div class="right-buttons">
+                            <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#error-handling" id="error-handling">Error Handling</a></h1>
+<p>The two basic types of error-handling revolves around Rust's <code>Result&lt;T, E&gt;</code> type
+and panics.</p>
+<ul>
+<li>Typical recoverable errors can be handled via <code>Result</code>s.</li>
+<li>The errors that <em>should never happen</em> and when they do occur the program
+should crash are addressed through panics.</li>
+</ul>
+<h2><a class="header" href="#panics" id="panics">Panics</a></h2>
+<p>When a program produces a <strong>panic</strong>, it should indicate that something is wrong
+with the program itself such that it could not recover from that fault.</p>
+<p>Typical cases look like:</p>
+<ul>
+<li>Array out-of-bounds index access.</li>
+<li>Integer division-by-zero.</li>
+<li>Calling <code>.unwrap</code> on an <code>None</code> variant of <code>Option</code>.</li>
+<li>Failing an <code>assert</code>.</li>
+</ul>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/panic/index.html">std::panic</a></p>
+</blockquote>
+<p>The <code>panic!()</code> macro is also provided for the user to trigger a panic.</p>
+<p>Typically, panics should <em>only</em> be used as a <em>last-resort</em> type of deal and
+indicate critical, unhandleable failures.</p>
+<p>WHen a panic do occurs though, Rust can either</p>
+<ul>
+<li><em>Unwind</em> the stack to produce a <em>stack backtrace</em>; or</li>
+<li>Abort the process.</li>
+</ul>
+<h3><a class="header" href="#unwinding" id="unwinding">Unwinding</a></h3>
+<p>A typical error message looks like</p>
+<pre><code>thread 'main' panicked at 'attempt to divide by zero', main.rs:3780
+note: Run with `RUST_BACKTRACE=1` for a backtrace.
+</code></pre>
+<p>As suggested, the user can set the <code>RUST_BACKTRACE=1</code> environment variable to
+enable debug backtrace dump.</p>
+<p>After the error message is printed, all local temporaries, variables and
+arguments for the current function in scope is dropped to be cleaned up, and
+transitively heap-allocated memory, file handles, and other resources will be
+freed up to prevent memory leaks.</p>
+<p>When all relevant <code>drop</code> handlers are called then the current thread exists with
+a non-zero exit code indicating failure; and when the main thread exists, so
+does the process.</p>
+<p>Panic occurs on a per-thread basis.</p>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/panic/fn.catch_unwind.html">std::panic::catch_unwind</a></p>
+</blockquote>
+<p>Recover from panics and to <em>catch</em> stack unwinding is provided through
+<code>std::panic::catch_unwind()</code> and related facilities.</p>
+<h3><a class="header" href="#aborting" id="aborting">Aborting</a></h3>
+<p>Unwinding the is default behaviour, but if panics are triggered from within
+<code>drop</code> methods which are responsible for trying to cleanup, then the process is
+aborted as this is considered fatal.</p>
+<p>Rust can also have customized panic behaviour. When compiled with <code>-C panic=abort</code> then the first panic triggered in the program will abort the
+process, which can reduce size of compiled binary.</p>
+<h2><a class="header" href="#result" id="result">Result</a></h2>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/result/index.html">std::result</a></p>
+</blockquote>
+<p>Rust don't use run-time exceptions to avoid the run-time overhead. Functions use
+<code>Result&lt;T, E&gt;</code> to encode the possiblity that some computation may fail.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>/// The `Result` enum encodes the possibility of a computation either
+/// *succeeding* with the `Ok(T)` variant, or *failing* with the `Err(E)`
+/// variant.
+enum Result&lt;T, E&gt; {
+    Ok(T),
+    Err(E),
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#handling-errors" id="handling-errors">Handling Errors</a></h3>
+<p>Instead of try-catch, use <code>match</code> on expressions that produces a <code>Result</code> to
+exhaustively handle both <code>Ok(T)</code> and <code>Err(E)</code> cases.</p>
+<p>Since <code>match</code> may be somewhat verbose, <code>Result&lt;T, E&gt;</code> defines some helper
+methods.</p>
+<ul>
+<li><code>result.is_ok() -&gt; bool</code> and <code>result.is_err() -&gt; bool</code> are helper methods for
+checking which variant the <code>Result</code> is.</li>
+<li><code>result.ok() -&gt; Option&lt;T&gt;</code> maps the <code>Result&lt;T, E&gt;</code> into <code>Option&lt;T&gt;</code> when we
+don't need information on the error, and only needs to check if the value is
+present. If the computation is successful, <code>Some(T)</code> is returned, and if the
+computation failed, then <code>None</code> is returned.</li>
+<li><code>result.err() -&gt; Option&lt;E&gt;</code> maps the <code>Result&lt;T, E&gt;</code> into <code>Option&lt;E&gt;</code> when we
+are more concerned with the error cause.</li>
+<li><code>result.unwrap_or(fallback_value)</code> returns either the success value, or the
+<code>fallback_value</code> instead.</li>
+<li><code>result.unwrap_or_else(fallback_producer)</code> returns either the success value,
+or produces the fallback value from the fallback value produce
+<code>fallback_producer</code> closure or function.</li>
+<li><code>result.unwrap()</code> either returns the success value or fails with a panic.</li>
+<li><code>result.expect()</code> is like <code>.unwrap()</code> but produces a message on panic.</li>
+<li><code>result.as_ref()</code> maps a <code>Result&lt;T, E&gt;</code> into a <code>Result&lt;&amp;T, &amp;E&gt;</code> to borrow a
+reference to the success or error values.</li>
+<li><code>result.as_mut()</code> maps a <code>Result&lt;T, E&gt;</code> into a <code>Result&lt;&amp;mut T, &amp;mut E&gt;</code> to
+borrow a mutable reference to the success or error values.</li>
+</ul>
+<p>Apart from the <code>as_ref()</code> and <code>as_mut()</code> methods, other methods consume the
+<code>result</code> for which they are invoked upon.</p>
+<h3><a class="header" href="#type-aliases" id="type-aliases">Type Aliases</a></h3>
+<p>Sometimes a module's <code>Result</code> type omits the error type because a module's
+functions and methods share an error type. This typically happens because the
+module defines a type alias such as</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub type Result&lt;T&gt; = std::result::Result&lt;T, std::io::Error&gt;;
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#error-propagation" id="error-propagation">Error Propagation</a></h3>
+<p>When errors are meant to be dealt by the caller, or if error-handling should be
+deferred, errors then can be <em>propagated</em>.</p>
+<p>Rust has the <code>?</code> operator which either continues with the computation by
+evaluating to the successful result, or in the case of failure, returns early
+from the function with the error cause.</p>
+<p>The <code>?</code> operator requires that the enclosing function has a <code>Result&lt;T, E&gt;</code>
+return type, and that the expressions for which the <code>?</code> operator is invoked upon
+must have a homogeneous error type.</p>
+<p>The <code>?</code> operator is merely syntax sugar for</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let _ = match expr {
+    Ok(success_value) =&gt; success_value,
+    Err(err) =&gt; return Err(err),
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Sometimes error types may be different and do not automatically convert between
+each other.</p>
+<ul>
+<li>It is possible to define custom error types and to implement conversions from
+other types to the custom error. The <code>error-chain</code> crate is useful for this
+route.</li>
+</ul>
+<blockquote>
+<p>Reference: <a href="https://doc.rust-lang.org/std/convert/trait.From.html">std::convert::From</a></p>
+</blockquote>
+<p>All std error types can be converted to <code>Box&lt;std::error::Error&gt;</code> which can
+represent <em>any std error</em>.</p>
+<p>For example,</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>type GenError = Box&lt;std::error::Error&gt;;
+type GenResult&lt;T&gt; = Result&lt;T, GenError&gt;;
+<span class="boring">}
+</span></code></pre></pre>
+<p>Though in this case the return type masks the actual type of errors that the
+caller should expect.</p>
+<p>It is possible to selectively handle one error and let other error types
+propgate out through the <code>err.downcast_ref::&lt;E&gt;()</code> for error type <code>E</code>.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../../content/expressions/remark-variance.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../../content/expressions/remark-variance.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
